@@ -1,0 +1,9 @@
+Thumbs.db
+.idea
+*.iml
+*.class
+target*/
+*.ipch
+*.prefs
+*.project
+*.classpath
