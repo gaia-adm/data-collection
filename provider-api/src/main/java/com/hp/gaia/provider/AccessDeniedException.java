@@ -1,4 +1,4 @@
-package com.hp.gaia.data;
+package com.hp.gaia.provider;
 
 /**
  * To be thrown when provider cannot fetch data due to access being denied - due to invalid credentials, no credentials

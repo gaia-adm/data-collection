@@ -1,7 +1,6 @@
-package com.hp.gaia.data;
+package com.hp.gaia.provider;
 
 import java.io.Closeable;
-import java.util.Iterator;
 
 /**
  * Represents stream of data blocks which are to be processed independently. User of the data structure is responsible

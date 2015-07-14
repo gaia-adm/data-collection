@@ -1,4 +1,4 @@
-package com.hp.gaia.data;
+package com.hp.gaia.provider;
 
 /**
  * To be thrown when data provider receives configuration that is not valid and operation must not be retried. This could

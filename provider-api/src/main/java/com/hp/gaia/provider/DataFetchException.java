@@ -1,4 +1,4 @@
-package com.hp.gaia.data;
+package com.hp.gaia.provider;
 
 /**
  * To be thrown when there was a general error when fetching data - network related, server returning an unexpected

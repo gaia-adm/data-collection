@@ -1,4 +1,4 @@
-package com.hp.gaia.data;
+package com.hp.gaia.provider;
 
 import javax.validation.constraints.NotNull;
 import java.io.InputStream;
@@ -11,14 +11,26 @@ import java.util.Map;
  */
 public interface Data {
 
+    /**
+     * metric-type(test,build,defect,scm)
+     */
     @NotNull
     String getMetric();
 
+    /**
+     * automatic-test,commit,fork
+     */
     @NotNull
     String getCategory();
 
+    /**
+     * test-name,job-name,defect-number,sha-of-commit
+     */
     String getName();
 
+    /**
+     * ci-server,qc-name/project,scm-repository
+     */
     String getSource();
 
     /**

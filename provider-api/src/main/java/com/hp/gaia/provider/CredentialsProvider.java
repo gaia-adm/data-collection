@@ -1,4 +1,4 @@
-package com.hp.gaia.data;
+package com.hp.gaia.provider;
 
 import java.util.Map;
 
