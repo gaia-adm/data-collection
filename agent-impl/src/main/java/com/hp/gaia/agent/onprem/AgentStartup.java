@@ -11,17 +11,14 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.io.File;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Main class for on-premise agent startup. Handles command line options.
  */
 public class AgentStartup {
-
-    private static Logger logger = Logger.getLogger(AgentStartup.class.getName());
 
     private static final String PROVIDERS_CONFIG = "providers.json";
     private static final String AGENT_CONFIG = "agent.json";
@@ -42,14 +39,14 @@ public class AgentStartup {
             printHelp(opts);
             System.exit(0);
         }
-        File providersConfigFile = getConfigFile(cmd, PROVIDERS_CONFIG, "p");
         File agentConfigFile = getConfigFile(cmd, AGENT_CONFIG, "a");
+        File providersConfigFile = getConfigFile(cmd, PROVIDERS_CONFIG, "p");
         File credentialsConfigFile = getConfigFile(cmd, CREDENTIALS_CONFIG, "c");
 
         // verify files exist
         try {
-            verifyFile(providersConfigFile);
             verifyFile(agentConfigFile);
+            verifyFile(providersConfigFile);
             verifyFile(credentialsConfigFile);
         } catch (Exception e) {
             System.err.println(e.getMessage());
@@ -58,17 +55,35 @@ public class AgentStartup {
         }
 
         // parse configuration files
-        ProvidersConfig providersConfig;
-        AgentConfig agentConfig;
-        CredentialsConfig credentialsConfig;
+        AgentConfig agentConfig = null;
+        ProvidersConfig providersConfig = null;
+        CredentialsConfig credentialsConfig = null;
         try {
-            providersConfig = ConfigFactory.readConfig(providersConfigFile, ProvidersConfig.class);
             agentConfig = ConfigFactory.readConfig(agentConfigFile, AgentConfig.class);
+            providersConfig = ConfigFactory.readConfig(providersConfigFile, ProvidersConfig.class);
             credentialsConfig = ConfigFactory.readCredentialsConfig(credentialsConfigFile);
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Exception while reading configuration file", e);
+            e.printStackTrace();
             System.exit(3);
         }
+
+        init(agentConfig, providersConfig, credentialsConfig);
+
+        // wait until interrupted
+        while (true) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                break;
+            }
+        }
+    }
+
+    private static void init(AgentConfig agentConfig, ProvidersConfig providersConfig, CredentialsConfig credentialsConfig) {
+        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[] {"classpath*:/Spring/gaia-agent*-context.xml"});
+        context.refresh();
+        ConfigurationService configurationService = context.getBean(ConfigurationService.class);
+        configurationService.init(agentConfig, providersConfig, credentialsConfig);
     }
 
     private static File getConfigFile(CommandLine cmd, final String defaultConfigName, final String optionName) {
