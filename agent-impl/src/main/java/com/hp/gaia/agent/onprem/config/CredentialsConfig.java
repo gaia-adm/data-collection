@@ -1,4 +1,6 @@
-package com.hp.gaia.agent.config;
+package com.hp.gaia.agent.onprem.config;
+
+import com.hp.gaia.agent.config.Credentials;
 
 import java.util.Map;
 

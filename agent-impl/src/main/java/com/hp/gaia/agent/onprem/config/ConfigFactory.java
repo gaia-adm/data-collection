@@ -1,8 +1,10 @@
-package com.hp.gaia.agent.config;
+package com.hp.gaia.agent.onprem.config;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hp.gaia.agent.config.Credentials;
+import com.hp.gaia.agent.onprem.config.CredentialsConfig;
 
 import java.io.File;
 import java.io.IOException;

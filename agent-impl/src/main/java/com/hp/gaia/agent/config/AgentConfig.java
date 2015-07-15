@@ -18,10 +18,10 @@ public class AgentConfig {
     private Proxy proxy;
 
     @JsonProperty("soTimeout")
-    private int soTimeout;
+    private Integer soTimeout;
 
     @JsonProperty("connectionTimeout")
-    private int connectionTimeout;
+    private Integer connectionTimeout;
 
     public String getGaiaLocation() {
         return gaiaLocation;
@@ -35,11 +35,11 @@ public class AgentConfig {
         return proxy;
     }
 
-    public int getSoTimeout() {
+    public Integer getSoTimeout() {
         return soTimeout;
     }
 
-    public int getConnectionTimeout() {
+    public Integer getConnectionTimeout() {
         return connectionTimeout;
     }
 

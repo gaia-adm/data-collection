@@ -1,13 +1,16 @@
-package com.hp.gaia.agent.config;
+package com.hp.gaia.agent.onprem.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.hp.gaia.agent.config.ProviderConfig;
+import com.hp.gaia.agent.config.Proxy;
 
+import java.util.List;
 import java.util.Map;
 
 public class ProvidersConfig {
 
     @JsonProperty("providers")
-    private Map<String, ProviderConfig> providers;
+    private List<ProviderConfig> providers;
 
     /**
      * Common proxy for data providers if not overridden.
@@ -15,7 +18,7 @@ public class ProvidersConfig {
     @JsonProperty("proxy")
     private Proxy proxy;
 
-    public Map<String, ProviderConfig> getProviders() {
+    public List<ProviderConfig> getProviders() {
         return providers;
     }
 
