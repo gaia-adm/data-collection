@@ -5,7 +5,6 @@ import com.hp.gaia.provider.ProxyProvider;
 import org.apache.commons.lang.StringUtils;
 
 import java.net.InetSocketAddress;
-import java.net.MalformedURLException;
 import java.net.Proxy.Type;
 import java.net.URL;
 import java.util.Collections;
@@ -22,13 +21,7 @@ public class ProxyProviderImpl implements ProxyProvider {
     @Override
     public List<java.net.Proxy> getProxyList() {
         if (proxy != null && !StringUtils.isEmpty(proxy.getHttpProxy())) {
-            URL proxyUrl = null;
-            try {
-                proxyUrl = new URL(proxy.getHttpProxy());
-            } catch (MalformedURLException e) {
-                // proxyURL is validated during startup
-                throw new IllegalStateException("Proxy URL '" + proxyUrl + "' is invalid", e);
-            }
+            URL proxyUrl = proxy.getHttpProxyURL();
             return Collections.singletonList(new java.net.Proxy(Type.HTTP, InetSocketAddress.createUnresolved(proxyUrl.getHost(), proxyUrl.getPort())));
         } else {
             return Collections.emptyList();

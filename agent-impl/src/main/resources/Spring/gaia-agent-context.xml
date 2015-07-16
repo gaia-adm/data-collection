@@ -28,7 +28,7 @@
 
     <bean id="dataCollectionJobTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">
         <property name="jobDetail" ref="dataCollectionJobDetail"/>
-        <property name="startDelay" value="5000"/>
+        <property name="startDelay" value="2000"/>
         <property name="repeatInterval" value="60000"/>
     </bean>
 
@@ -42,6 +42,6 @@
 
     <bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
         <property name="corePoolSize" value="1"/>
-        <property name="maxPoolSize" value="5"/>
+        <property name="maxPoolSize" value="5"/> <!-- TODO: make configurable -->
     </bean>
 </beans>

@@ -51,14 +51,14 @@ public interface Data {
 
     /**
      * Bookmark that identifies this data block or the first item if the stream contains a list of items. Can be used to
-     * read the same block again via {@link DataProvider#fetchData(Map, CredentialsProvider, String, boolean)} with
-     * inclusive=true. However a provider may decide to split a block into smaller blocks at its own discretion as long
-     * as they can have unique bookmarks.
+     * read the same block again via {@link DataProvider#fetchData(Map, CredentialsProvider, ProxyProvider, String,
+     * boolean)} with inclusive=true. However a provider may decide to split a block into smaller blocks at its own
+     * discretion as long as they can have unique bookmarks.
      * <p>
      * It may be an id, timestamp or JSON value - implementation specific. In case of paging it must include information
      * necessary for retrieving the same page again. It must also include enough information so that the provider is
-     * able to retrieve the next data block with {@link DataProvider#fetchData(Map, CredentialsProvider, String,
-     * boolean)} with inclusive=false.
+     * able to retrieve the next data block with {@link DataProvider#fetchData(Map, CredentialsProvider, ProxyProvider,
+     * String, boolean)} with inclusive=false.
      */
     @NotNull
     String bookmark();

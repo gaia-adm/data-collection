@@ -10,8 +10,6 @@ import org.apache.commons.lang.Validate;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -96,12 +94,7 @@ public class OnPremProvidersConfigService extends ConfigurationService implement
         }
         if (providerConfig.getProxy() != null && !StringUtils.isEmpty(providerConfig.getProxy().getHttpProxy())) {
             // validate proxy URL
-            String proxyUrl = providerConfig.getProxy().getHttpProxy();
-            try {
-                new URL(proxyUrl);
-            } catch (MalformedURLException e) {
-                throw new IllegalStateException("Proxy URL '" + proxyUrl + "' is invalid", e);
-            }
+            providerConfig.getProxy().getHttpProxyURL();
         }
     }
 }

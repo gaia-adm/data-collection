@@ -32,6 +32,7 @@ public class AgentStartup {
         GlobalSettings.setWorkingDir(getWorkingDir());
         ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[] {"classpath*:/Spring/gaia-agent*-context.xml"}, false);
         context.refresh();
+        context.registerShutdownHook();
     }
 
     private static String getWorkingDir() {
