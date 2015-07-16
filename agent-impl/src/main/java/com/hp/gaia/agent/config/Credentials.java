@@ -6,6 +6,9 @@ import java.util.Map;
 
 public class Credentials {
 
+    @JsonProperty("credentialsId")
+    private String credentialsId;
+
     /**
      * If true then all credential values are encrypted.
      */
@@ -14,6 +17,10 @@ public class Credentials {
 
     @JsonProperty("values")
     private Map<String, String> values;
+
+    public String getCredentialsId() {
+        return credentialsId;
+    }
 
     public boolean isEncrypted() {
         return encrypted;

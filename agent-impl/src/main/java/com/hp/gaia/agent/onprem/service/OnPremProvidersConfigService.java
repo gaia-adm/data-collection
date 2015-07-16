@@ -10,6 +10,9 @@ import org.apache.commons.lang.Validate;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -69,6 +72,10 @@ public class OnPremProvidersConfigService extends ConfigurationService implement
         return providerConfig;
     }
 
+    public List<ProviderConfig> getProviderConfigs() {
+        return Collections.unmodifiableList(new ArrayList<>(providerConfigMap.values()));
+    }
+
     @Override
     public boolean isProviderConfig(final String providerConfigId) {
         Validate.notNull(providerConfigId);
@@ -87,6 +94,14 @@ public class OnPremProvidersConfigService extends ConfigurationService implement
         if (providerConfig.getRunPeriod() != null && providerConfig.getRunPeriod() <= 0) {
             throw new IllegalStateException("runPeriod cannot be negative");
         }
-
+        if (providerConfig.getProxy() != null && !StringUtils.isEmpty(providerConfig.getProxy().getHttpProxy())) {
+            // validate proxy URL
+            String proxyUrl = providerConfig.getProxy().getHttpProxy();
+            try {
+                new URL(proxyUrl);
+            } catch (MalformedURLException e) {
+                throw new IllegalStateException("Proxy URL '" + proxyUrl + "' is invalid", e);
+            }
+        }
     }
 }

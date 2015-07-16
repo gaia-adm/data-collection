@@ -2,20 +2,20 @@ package com.hp.gaia.agent.onprem.config;
 
 import com.hp.gaia.agent.config.Credentials;
 
-import java.util.Map;
+import java.util.List;
 
 public class CredentialsConfig {
 
     /**
      * Map of credentialsId to {@link Credentials}.
      */
-    private final Map<String, Credentials> credentialsMap;
+    private final List<Credentials> credentials;
 
-    public CredentialsConfig(final Map<String, Credentials> credentialsMap) {
-        this.credentialsMap = credentialsMap;
+    public CredentialsConfig(final List<Credentials> credentials) {
+        this.credentials = credentials;
     }
 
-    public Map<String, Credentials> getCredentialsMap() {
-        return credentialsMap;
+    public List<Credentials> getCredentials() {
+        return credentials;
     }
 }

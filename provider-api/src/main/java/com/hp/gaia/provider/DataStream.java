@@ -26,5 +26,5 @@ public interface DataStream extends Closeable {
     /**
      * Returns the next data block or <code>null</code> if no next data block is available.
      */
-    Data next() throws AccessDeniedException, DataFetchException;
+    Data next() throws AccessDeniedException;
 }

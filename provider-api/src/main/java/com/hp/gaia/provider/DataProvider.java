@@ -33,5 +33,5 @@ public interface DataProvider {
      */
     DataStream fetchData(Map<String, String> properties, CredentialsProvider credentialsProvider,
                          ProxyProvider proxyProvider, String bookmark, boolean inclusive)
-            throws AccessDeniedException, InvalidConfigurationException, DataFetchException;
+            throws AccessDeniedException, InvalidConfigurationException;
 }

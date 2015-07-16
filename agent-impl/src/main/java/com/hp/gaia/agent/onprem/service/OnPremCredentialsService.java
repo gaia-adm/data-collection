@@ -10,6 +10,7 @@ import javax.annotation.PostConstruct;
 import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class OnPremCredentialsService extends ConfigurationService implements CredentialsService {
@@ -24,9 +25,12 @@ public class OnPremCredentialsService extends ConfigurationService implements Cr
         verifyFile(credentialsConfigFile);
 
         CredentialsConfig credentialsConfig = ConfigFactory.readCredentialsConfig(credentialsConfigFile);
-        credentialsMap = credentialsConfig.getCredentialsMap();
-        if (credentialsMap == null) {
-            credentialsMap = new HashMap<>();
+        credentialsMap = new HashMap<>();
+        List<Credentials> credentialsList = credentialsConfig.getCredentials();
+        if (credentialsList != null) {
+            for (Credentials credentials : credentialsList) {
+                credentialsMap.put(credentials.getCredentialsId(), credentials);
+            }
         }
     }
 

@@ -5,6 +5,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class CollectionState {
 
     public enum State {
+        /**
+         * Data collection is about to be executed.
+         */
+        PENDING,
         RUNNING,
         FINISHED
     }
@@ -31,6 +35,13 @@ public class CollectionState {
 
     @JsonProperty("result")
     private Result result;
+
+    public CollectionState() {
+    }
+
+    public CollectionState(final String providerConfigId) {
+        this.providerConfigId = providerConfigId;
+    }
 
     public String getProviderConfigId() {
         return providerConfigId;

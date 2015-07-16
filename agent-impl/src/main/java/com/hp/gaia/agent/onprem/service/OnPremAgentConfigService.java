@@ -9,6 +9,8 @@ import org.apache.commons.lang.Validate;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 public class OnPremAgentConfigService extends ConfigurationService implements AgentConfigService {
 
@@ -70,6 +72,15 @@ public class OnPremAgentConfigService extends ConfigurationService implements Ag
         }
         if (agentConfig.getConnectionTimeout() != null && agentConfig.getConnectionTimeout() <= 0) {
             throw new IllegalStateException("connectionTimeout cannot be negative");
+        }
+        if (agentConfig.getProxy() != null && !StringUtils.isEmpty(agentConfig.getProxy().getHttpProxy())) {
+            // validate proxy URL
+            String proxyUrl = agentConfig.getProxy().getHttpProxy();
+            try {
+                new URL(proxyUrl);
+            } catch (MalformedURLException e) {
+                throw new IllegalStateException("Proxy URL '" + proxyUrl + "' is invalid", e);
+            }
         }
     }
 }

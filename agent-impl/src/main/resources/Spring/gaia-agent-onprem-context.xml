@@ -15,25 +15,8 @@
 
     <bean id="onPremCollectionStateService" class="com.hp.gaia.agent.onprem.service.OnPremCollectionStateService"/>
 
-    <bean id="dataCollectionJob" class="com.hp.gaia.agent.onprem.DataCollectionJob"/>
+    <bean id="onPremPlannedCollectionProvider"
+          class="com.hp.gaia.agent.onprem.service.OnPremPlannedCollectionProvider"/>
 
-    <bean id="dataCollectionJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-        <property name="targetObject" ref="dataCollectionJob"/>
-        <property name="targetMethod" value="execute"/>
-        <property name="concurrent" value="false"/>
-    </bean>
-
-    <bean id="dataCollectionJobTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">
-        <property name="jobDetail" ref="dataCollectionJobDetail"/>
-        <property name="startDelay" value="5000"/>
-        <property name="repeatInterval" value="60000"/>
-    </bean>
-
-    <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
-        <property name="triggers">
-            <list>
-                <ref bean="dataCollectionJobTrigger"/>
-            </list>
-        </property>
-    </bean>
+    <bean id="onPremResultUploadService" class="com.hp.gaia.agent.onprem.service.OnPremResultUploadService"/>
 </beans>

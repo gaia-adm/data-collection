@@ -4,11 +4,10 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hp.gaia.agent.config.Credentials;
-import com.hp.gaia.agent.onprem.config.CredentialsConfig;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
+import java.util.List;
 
 public class ConfigFactory {
 
@@ -32,9 +31,9 @@ public class ConfigFactory {
 
     public static CredentialsConfig readCredentialsConfig(File configFile) {
         try {
-            TypeReference ref = new TypeReference<Map<String, Credentials>>() {};
-            Map<String, Credentials> credentialsConfigMap = getObjectMapper().readValue(configFile, ref);
-            return new CredentialsConfig(credentialsConfigMap);
+            TypeReference ref = new TypeReference<List<Credentials>>() {};
+            List<Credentials> credentials = getObjectMapper().readValue(configFile, ref);
+            return new CredentialsConfig(credentials);
         } catch (IOException e) {
             throw new RuntimeException("Failed to parse configuration file " + configFile.getName(), e);
         }

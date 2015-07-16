@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hp.gaia.agent.onprem.GlobalSettings;
 import com.hp.gaia.agent.service.CollectionState;
+import com.hp.gaia.agent.service.CollectionState.Result;
+import com.hp.gaia.agent.service.CollectionState.State;
 import com.hp.gaia.agent.service.CollectionStateService;
 import com.hp.gaia.agent.service.ProvidersConfigService;
 import org.apache.commons.lang.Validate;
@@ -65,6 +67,7 @@ public class OnPremCollectionStateService implements CollectionStateService {
                 CollectionState collectionState = objectMapper.readValue(file, CollectionState.class);
 
                 if (providersConfigService.isProviderConfig(collectionState.getProviderConfigId())) {
+                    fixCollectionState(collectionState);
                     resultList.add(collectionState);
                 } else {
                     logger.warn("Found obsolete collection state " + file.getName() +
@@ -76,6 +79,18 @@ public class OnPremCollectionStateService implements CollectionStateService {
         }
 
         return resultList;
+    }
+
+    /**
+     * Fixes an existing {@link CollectionState}. For example it may have state marked as RUNNING or PENDING, but
+     * since we are starting it may not be true.
+     */
+    private void fixCollectionState(final CollectionState collectionState) {
+        if (collectionState.getState() == State.PENDING || collectionState.getState() == State.RUNNING) {
+            collectionState.setState(State.FINISHED);
+            collectionState.setResult(Result.FAILURE);
+            saveToFile(collectionState);
+        }
     }
 
     @Override
@@ -96,15 +111,19 @@ public class OnPremCollectionStateService implements CollectionStateService {
         if (!providersConfigService.isProviderConfig(providerConfigId)) {
             throw new IllegalArgumentException(providerConfigId + " is not a valid provider configuration id");
         }
-
         // save the state into file
+        saveToFile(collectionState);
+
+        // save locally
+        collectionStateMap.put(providerConfigId, collectionState);
+    }
+
+    private void saveToFile(final CollectionState collectionState) {
         try {
             objectMapper.writeValue(getStateFile(collectionState.getProviderConfigId()), collectionState);
         } catch (IOException e) {
             throw new RuntimeException("Failed to save collection state", e);
         }
-        // save locally
-        collectionStateMap.put(providerConfigId, collectionState);
     }
 
     void deleteCollectionState(final String providerConfigId) {
