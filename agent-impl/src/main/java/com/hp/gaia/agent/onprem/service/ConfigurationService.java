@@ -10,7 +10,7 @@ import java.io.File;
 public abstract class ConfigurationService {
 
     protected static File getConfigFile(final String configName) {
-        return new File(GlobalSettings.getWorkingDir() + File.separatorChar + "conf" + File.separatorChar + configName);
+        return GlobalSettings.getConfigFile(configName);
     }
 
     protected static void verifyFile(File file) {

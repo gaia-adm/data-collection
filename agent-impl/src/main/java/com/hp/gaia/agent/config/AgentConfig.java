@@ -11,6 +11,9 @@ public class AgentConfig {
     @JsonProperty("accessToken")
     private String accessToken;
 
+    @JsonProperty("workerPool")
+    private Integer workerPool;
+
     /**
      * Proxy for connecting to GAIA.
      */
@@ -31,6 +34,10 @@ public class AgentConfig {
         return accessToken;
     }
 
+    public Integer getWorkerPool() {
+        return workerPool;
+    }
+
     public Proxy getProxy() {
         return proxy;
     }
@@ -47,6 +54,7 @@ public class AgentConfig {
     public String toString() {
         final StringBuilder sb = new StringBuilder("AgentConfig{");
         sb.append("gaiaLocation='").append(gaiaLocation).append('\'');
+        sb.append(", workerPool=").append(workerPool);
         sb.append(", soTimeout=").append(soTimeout);
         sb.append(", connectTimeout=").append(connectTimeout);
         sb.append(", proxy=").append(proxy);

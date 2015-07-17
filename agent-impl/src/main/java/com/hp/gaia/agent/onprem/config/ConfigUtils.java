@@ -7,9 +7,10 @@ import com.hp.gaia.agent.config.Credentials;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
-public class ConfigFactory {
+public class ConfigUtils {
 
     private static ObjectMapper mapper;
 
@@ -26,6 +27,18 @@ public class ConfigFactory {
             return getObjectMapper().readValue(configFile, configClass);
         } catch (IOException e) {
             throw new RuntimeException("Failed to parse configuration file " + configFile.getName(), e);
+        }
+    }
+
+    public static void writeCredentialsConfig(File configFile, CredentialsConfig credentialsConfig) {
+        try {
+            List<Credentials> credentialsList = credentialsConfig.getCredentials();
+            if (credentialsList == null) {
+                credentialsList = Collections.emptyList();
+            }
+            getObjectMapper().writeValue(configFile, credentialsList);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to write configuration file " + configFile.getName(), e);
         }
     }
 

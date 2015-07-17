@@ -1,6 +1,8 @@
 package com.hp.gaia.agent.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import java.util.Map;
 
@@ -9,24 +11,16 @@ public class Credentials {
     @JsonProperty("credentialsId")
     private String credentialsId;
 
-    /**
-     * If true then all credential values are encrypted.
-     */
-    @JsonProperty("encrypted")
-    private boolean encrypted;
-
+    @JsonDeserialize(converter = ProtectedValueMapInConverter.class)
+    @JsonSerialize(converter = ProtectedValueMapOutConverter.class)
     @JsonProperty("values")
-    private Map<String, String> values;
+    private Map<String, ProtectedValue> values;
 
     public String getCredentialsId() {
         return credentialsId;
     }
 
-    public boolean isEncrypted() {
-        return encrypted;
-    }
-
-    public Map<String, String> getValues() {
+    public Map<String, ProtectedValue> getValues() {
         return values;
     }
 }

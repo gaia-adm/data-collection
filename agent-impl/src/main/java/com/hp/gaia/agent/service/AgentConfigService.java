@@ -13,6 +13,11 @@ public interface AgentConfigService {
     @NotNull
     String getGaiaLocation();
 
+    /**
+     * Returns worker pool size.
+     */
+    int getWorkerPool();
+
     int getSoTimeout();
 
     int getConnecTimeout();

@@ -7,16 +7,19 @@
 
     <context:annotation-config/>
 
-    <bean id="onPremAgentConfigService" class="com.hp.gaia.agent.onprem.service.OnPremAgentConfigService"/>
+    <bean id="agent_agentConfigService" class="com.hp.gaia.agent.onprem.service.OnPremAgentConfigService"/>
 
-    <bean id="onPremCredentialsService" class="com.hp.gaia.agent.onprem.service.OnPremCredentialsService"/>
+    <bean id="agent_credentialsService" class="com.hp.gaia.agent.onprem.service.OnPremCredentialsService"/>
 
-    <bean id="onPremProvidersConfigService" class="com.hp.gaia.agent.onprem.service.OnPremProvidersConfigService"/>
+    <bean id="agent_providersConfigService" class="com.hp.gaia.agent.onprem.service.OnPremProvidersConfigService"/>
 
-    <bean id="onPremCollectionStateService" class="com.hp.gaia.agent.onprem.service.OnPremCollectionStateService"/>
+    <bean id="agent_collectionStateService" class="com.hp.gaia.agent.onprem.service.OnPremCollectionStateService"/>
 
-    <bean id="onPremPlannedCollectionProvider"
+    <bean id="agent_plannedCollectionProvider"
           class="com.hp.gaia.agent.onprem.service.OnPremPlannedCollectionProvider"/>
 
-    <bean id="onPremResultUploadService" class="com.hp.gaia.agent.onprem.service.OnPremResultUploadService"/>
+    <bean id="agent_resultUploadService" class="com.hp.gaia.agent.onprem.service.OnPremResultUploadService">
+        <property name="maxPoolSize" value="#{agent_agentConfigService.workerPool}"/>
+    </bean>
+
 </beans>

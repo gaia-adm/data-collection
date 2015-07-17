@@ -7,27 +7,33 @@
 
     <context:annotation-config/>
 
-    <bean id="dataProviderRegistry" class="com.hp.gaia.agent.service.DataProviderRegistry"/>
+    <bean id="agent_dataProviderRegistry" class="com.hp.gaia.agent.service.DataProviderRegistry"/>
 
-    <bean id="dataCollectionJob" class="com.hp.gaia.agent.collection.PlannedCollectionDiscoveryJob"/>
+    <bean id="agent_dataCollectionJob" class="com.hp.gaia.agent.collection.PlannedCollectionDiscoveryJob"/>
 
-    <bean id="dataCollectionTask" class="com.hp.gaia.agent.collection.DataCollectionTask" scope="prototype"/>
+    <bean id="agent_dataCollectionTask" class="com.hp.gaia.agent.collection.DataCollectionTask" scope="prototype"/>
 
-    <bean id="dataCollectionTaskFactory"
+    <bean id="agent_decryptService" class="com.hp.gaia.agent.service.DecryptService"/>
+
+    <bean id="agent_protectedValueDecrypter" class="com.hp.gaia.agent.service.ProtectedValueDecrypter">
+        <property name="secret" value="OBF:07gwergw2n0HD389374y0y30IFWEXFxm037fqa0x7fgm07gxGECRJeghdfgfasucfmp37xmalugfnvgf37fga0374y0mmmmmxf7xm23xm107g2018v7g3mcadggaushcnwye01c27ym589m4c4r741crnwq789ehmfq7xhfGdfoygfx5"/>
+    </bean>
+
+    <bean id="agent_dataCollectionTaskFactory"
           class="org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean">
         <property name="targetBeanName">
-            <idref bean="dataCollectionTask"/>
+            <idref bean="agent_dataCollectionTask"/>
         </property>
     </bean>
 
-    <bean id="dataCollectionJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-        <property name="targetObject" ref="dataCollectionJob"/>
+    <bean id="agent_dataCollectionJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="agent_dataCollectionJob"/>
         <property name="targetMethod" value="execute"/>
         <property name="concurrent" value="false"/>
     </bean>
 
-    <bean id="dataCollectionJobTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">
-        <property name="jobDetail" ref="dataCollectionJobDetail"/>
+    <bean id="agent_dataCollectionJobTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">
+        <property name="jobDetail" ref="agent_dataCollectionJobDetail"/>
         <property name="startDelay" value="2000"/>
         <property name="repeatInterval" value="60000"/>
     </bean>
@@ -35,13 +41,13 @@
     <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="triggers">
             <list>
-                <ref bean="dataCollectionJobTrigger"/>
+                <ref bean="agent_dataCollectionJobTrigger"/>
             </list>
         </property>
     </bean>
 
-    <bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+    <bean id="agent_taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
         <property name="corePoolSize" value="1"/>
-        <property name="maxPoolSize" value="5"/> <!-- TODO: make configurable -->
+        <property name="maxPoolSize" value="#{agent_agentConfigService.workerPool}"/>
     </bean>
 </beans>

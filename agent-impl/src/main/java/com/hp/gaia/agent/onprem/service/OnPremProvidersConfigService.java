@@ -2,7 +2,7 @@ package com.hp.gaia.agent.onprem.service;
 
 import com.hp.gaia.agent.config.ProviderConfig;
 import com.hp.gaia.agent.config.Proxy;
-import com.hp.gaia.agent.onprem.config.ConfigFactory;
+import com.hp.gaia.agent.onprem.config.ConfigUtils;
 import com.hp.gaia.agent.onprem.config.ProvidersConfig;
 import com.hp.gaia.agent.service.ProvidersConfigService;
 import org.apache.commons.lang.StringUtils;
@@ -28,7 +28,7 @@ public class OnPremProvidersConfigService extends ConfigurationService implement
     public void init() {
         File providersConfigFile = getConfigFile(PROVIDERS_CONFIG);
         verifyFile(providersConfigFile);
-        ProvidersConfig providersConfig = ConfigFactory.readConfig(providersConfigFile, ProvidersConfig.class);
+        ProvidersConfig providersConfig = ConfigUtils.readConfig(providersConfigFile, ProvidersConfig.class);
 
         this.providerConfigMap = new HashMap<>();
         final Proxy globalProxy = providersConfig.getProxy();

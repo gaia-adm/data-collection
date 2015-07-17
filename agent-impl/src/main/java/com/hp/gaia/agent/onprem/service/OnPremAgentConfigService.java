@@ -2,7 +2,7 @@ package com.hp.gaia.agent.onprem.service;
 
 import com.hp.gaia.agent.config.AgentConfig;
 import com.hp.gaia.agent.config.Proxy;
-import com.hp.gaia.agent.onprem.config.ConfigFactory;
+import com.hp.gaia.agent.onprem.config.ConfigUtils;
 import com.hp.gaia.agent.service.AgentConfigService;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
@@ -14,6 +14,7 @@ public class OnPremAgentConfigService extends ConfigurationService implements Ag
 
     private static final String AGENT_CONFIG = "agent.json";
 
+    private static final int DEFAULT_WORKER_POOL = 5;
     private static final int DEFAULT_SO_TIMEOUT = 60000;
     private static final int DEFAULT_CONNECT_TIMEOUT = 30000;
 
@@ -24,7 +25,7 @@ public class OnPremAgentConfigService extends ConfigurationService implements Ag
         final File agentConfigFile = getConfigFile(AGENT_CONFIG);
         verifyFile(agentConfigFile);
 
-        agentConfig = ConfigFactory.readConfig(agentConfigFile, AgentConfig.class);;
+        agentConfig = ConfigUtils.readConfig(agentConfigFile, AgentConfig.class);;
         validate(agentConfig);
     }
 
@@ -33,6 +34,11 @@ public class OnPremAgentConfigService extends ConfigurationService implements Ag
      */
     public String getAccessToken() {
         return agentConfig.getAccessToken();
+    }
+
+    @Override
+    public int getWorkerPool() {
+        return agentConfig.getWorkerPool() != null ? agentConfig.getWorkerPool() : DEFAULT_WORKER_POOL;
     }
 
     /**
@@ -75,6 +81,9 @@ public class OnPremAgentConfigService extends ConfigurationService implements Ag
         if (agentConfig.getProxy() != null && !StringUtils.isEmpty(agentConfig.getProxy().getHttpProxy())) {
             // validate proxy URL
             agentConfig.getProxy().getHttpProxyURL();
+        }
+        if (agentConfig.getWorkerPool() != null &&  agentConfig.getWorkerPool() <= 0) {
+            throw new IllegalStateException("workerPool must be at least 1");
         }
     }
 }

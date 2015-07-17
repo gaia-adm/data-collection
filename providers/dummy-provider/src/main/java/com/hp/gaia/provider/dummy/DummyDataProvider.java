@@ -47,6 +47,7 @@ public class DummyDataProvider implements DataProvider {
             @Override
             public Data next() throws AccessDeniedException {
                 if (counter++ < 2) {
+                    Map<String, String> credentials = credentialsProvider.getCredentials();
                     return new DummyData();
                 }
                 return null;

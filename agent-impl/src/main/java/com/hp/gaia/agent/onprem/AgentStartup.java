@@ -4,6 +4,9 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.file.Paths;
 
 /**
  * Main class for on-premise agent startup. Handles command line options.
@@ -28,8 +31,13 @@ public class AgentStartup {
         }
     }
 
-    private static void init() {
+    private static void init() throws MalformedURLException {
         GlobalSettings.setWorkingDir(getWorkingDir());
+        // setup logging configuration
+        File logFile = GlobalSettings.getConfigFile("log4j2.xml");
+        URL logFileUrl = Paths.get(logFile.toURI()).toUri().toURL();
+        System.getProperties().put("log4j.configurationFile", logFileUrl.toString());
+        // startup Spring context
         ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[] {"classpath*:/Spring/gaia-*-context.xml"}, false);
         context.refresh();
         context.registerShutdownHook();

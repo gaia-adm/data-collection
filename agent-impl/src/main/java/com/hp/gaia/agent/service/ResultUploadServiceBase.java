@@ -33,14 +33,20 @@ public abstract class ResultUploadServiceBase implements ResultUploadService {
 
     private CloseableHttpClient httpclient;
 
+    private int maxPoolSize;
+
     @Autowired
     private AgentConfigService agentConfigService;
+
+    public void setMaxPoolSize(int maxPoolSize) {
+        this.maxPoolSize = maxPoolSize;
+    }
 
     @PostConstruct
     public void init() {
         // create HTTP client
         PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
-        cm.setMaxTotal(5); // TODO: make configurable
+        cm.setMaxTotal(maxPoolSize);
 
         // socket configuration
         SocketConfig socketConfig = SocketConfig.custom().setSoTimeout(agentConfigService.getSoTimeout()).build();
