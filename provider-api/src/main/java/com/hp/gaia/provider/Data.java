@@ -12,26 +12,9 @@ import java.util.Map;
 public interface Data {
 
     /**
-     * metric-type(test,build,defect,scm)
+     * Returns metadata of content. See {@link MetadataConstants} for possible keys.
      */
-    @NotNull
-    String getMetric();
-
-    /**
-     * automatic-test,commit,fork
-     */
-    @NotNull
-    String getCategory();
-
-    /**
-     * test-name,job-name,defect-number,sha-of-commit
-     */
-    String getName();
-
-    /**
-     * ci-server,qc-name/project,scm-repository
-     */
-    String getSource();
+    Map<String, String> getMetadata();
 
     /**
      * HTTP Content-Type value (i.e application/xml, text/plain). It is recommended to add "charset=utf-8" and use UTF-8

@@ -15,7 +15,7 @@ public class OnPremAgentConfigService extends ConfigurationService implements Ag
     private static final String AGENT_CONFIG = "agent.json";
 
     private static final int DEFAULT_SO_TIMEOUT = 60000;
-    private static final int DEFAULT_CONNECTION_TIMEOUT = 30000;
+    private static final int DEFAULT_CONNECT_TIMEOUT = 30000;
 
     private AgentConfig agentConfig;
 
@@ -53,8 +53,9 @@ public class OnPremAgentConfigService extends ConfigurationService implements Ag
     }
 
     @Override
-    public int getConnectionTimeout() {
-        return agentConfig.getConnectionTimeout() != null ? agentConfig.getConnectionTimeout() : DEFAULT_CONNECTION_TIMEOUT;
+    public int getConnecTimeout() {
+        return agentConfig.getConnectTimeout() != null ? agentConfig.getConnectTimeout() :
+                DEFAULT_CONNECT_TIMEOUT;
     }
 
     private static void validate(final AgentConfig agentConfig) {
@@ -68,7 +69,7 @@ public class OnPremAgentConfigService extends ConfigurationService implements Ag
         if (agentConfig.getSoTimeout() != null && agentConfig.getSoTimeout() <= 0) {
             throw new IllegalStateException("soTimeout cannot be negative");
         }
-        if (agentConfig.getConnectionTimeout() != null && agentConfig.getConnectionTimeout() <= 0) {
+        if (agentConfig.getConnectTimeout() != null && agentConfig.getConnectTimeout() <= 0) {
             throw new IllegalStateException("connectionTimeout cannot be negative");
         }
         if (agentConfig.getProxy() != null && !StringUtils.isEmpty(agentConfig.getProxy().getHttpProxy())) {

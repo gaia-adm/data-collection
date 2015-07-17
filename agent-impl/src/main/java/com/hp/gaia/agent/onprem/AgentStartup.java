@@ -30,7 +30,7 @@ public class AgentStartup {
 
     private static void init() {
         GlobalSettings.setWorkingDir(getWorkingDir());
-        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[] {"classpath*:/Spring/gaia-agent*-context.xml"}, false);
+        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[] {"classpath*:/Spring/gaia-*-context.xml"}, false);
         context.refresh();
         context.registerShutdownHook();
     }

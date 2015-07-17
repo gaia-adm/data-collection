@@ -15,5 +15,5 @@ public interface AgentConfigService {
 
     int getSoTimeout();
 
-    int getConnectionTimeout();
+    int getConnecTimeout();
 }

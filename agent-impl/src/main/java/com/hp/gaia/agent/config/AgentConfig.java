@@ -20,8 +20,8 @@ public class AgentConfig {
     @JsonProperty("soTimeout")
     private Integer soTimeout;
 
-    @JsonProperty("connectionTimeout")
-    private Integer connectionTimeout;
+    @JsonProperty("connectTimeout")
+    private Integer connectTimeout;
 
     public String getGaiaLocation() {
         return gaiaLocation;
@@ -39,8 +39,8 @@ public class AgentConfig {
         return soTimeout;
     }
 
-    public Integer getConnectionTimeout() {
-        return connectionTimeout;
+    public Integer getConnectTimeout() {
+        return connectTimeout;
     }
 
     @Override
@@ -48,7 +48,7 @@ public class AgentConfig {
         final StringBuilder sb = new StringBuilder("AgentConfig{");
         sb.append("gaiaLocation='").append(gaiaLocation).append('\'');
         sb.append(", soTimeout=").append(soTimeout);
-        sb.append(", connectionTimeout=").append(connectionTimeout);
+        sb.append(", connectTimeout=").append(connectTimeout);
         sb.append(", proxy=").append(proxy);
         sb.append('}');
         return sb.toString();
