@@ -48,6 +48,7 @@ public class DummyDataProvider implements DataProvider {
             public Data next() throws AccessDeniedException {
                 if (counter++ < 2) {
                     Map<String, String> credentials = credentialsProvider.getCredentials();
+                    String proxyPassword = proxyProvider.getProxyPassword();
                     return new DummyData();
                 }
                 return null;

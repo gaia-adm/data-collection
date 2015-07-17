@@ -1,11 +1,15 @@
 package com.hp.gaia.agent.onprem.service;
 
 import com.hp.gaia.agent.config.AgentConfig;
+import com.hp.gaia.agent.config.ProtectedValue;
+import com.hp.gaia.agent.config.ProtectedValue.Type;
 import com.hp.gaia.agent.config.Proxy;
 import com.hp.gaia.agent.onprem.config.ConfigUtils;
 import com.hp.gaia.agent.service.AgentConfigService;
+import com.hp.gaia.agent.service.ProtectedValueDecrypter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
@@ -20,6 +24,9 @@ public class OnPremAgentConfigService extends ConfigurationService implements Ag
 
     private AgentConfig agentConfig;
 
+    @Autowired
+    private ProtectedValueDecrypter protectedValueDecrypter;
+
     @PostConstruct
     public void init() {
         final File agentConfigFile = getConfigFile(AGENT_CONFIG);
@@ -27,13 +34,29 @@ public class OnPremAgentConfigService extends ConfigurationService implements Ag
 
         agentConfig = ConfigUtils.readConfig(agentConfigFile, AgentConfig.class);;
         validate(agentConfig);
+        boolean saveNewFile = encryptNeededValues(agentConfig);
+        if (saveNewFile) {
+            File newConfigFile = new File(agentConfigFile.getAbsolutePath() + ".encrypted");
+            if (!newConfigFile.exists() || newConfigFile.canWrite()) {
+                ConfigUtils.writeConfig(newConfigFile, agentConfig);
+            }
+        }
     }
 
     /**
      * Returns access token to use for GAIA connection. Only relevant for on-prem deployment.
      */
     public String getAccessToken() {
-        return agentConfig.getAccessToken();
+        ProtectedValue protectedValue = agentConfig.getAccessToken();
+        if (protectedValue != null) {
+            if (protectedValue.getType() == Type.ENCRYPTED) {
+                return protectedValueDecrypter.decrypt(protectedValue);
+            } else {
+                return protectedValue.getValue();
+            }
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -69,8 +92,8 @@ public class OnPremAgentConfigService extends ConfigurationService implements Ag
         if (StringUtils.isEmpty(agentConfig.getGaiaLocation())) {
             throw new IllegalStateException("gaiaLocation cannot be null or empty");
         }
-        if (StringUtils.isEmpty(agentConfig.getAccessToken())) {
-            throw new IllegalStateException("accessToken cannot be null or empty");
+        if (agentConfig.getAccessToken() == null) {
+            throw new IllegalStateException("accessToken cannot be null");
         }
         if (agentConfig.getSoTimeout() != null && agentConfig.getSoTimeout() <= 0) {
             throw new IllegalStateException("soTimeout cannot be negative");
@@ -85,5 +108,16 @@ public class OnPremAgentConfigService extends ConfigurationService implements Ag
         if (agentConfig.getWorkerPool() != null &&  agentConfig.getWorkerPool() <= 0) {
             throw new IllegalStateException("workerPool must be at least 1");
         }
+    }
+
+    private boolean encryptNeededValues(final AgentConfig agentConfig) {
+        ProtectedValue protectedValue = agentConfig.getAccessToken();
+        if (protectedValue != null) {
+            if (protectedValue.getType() == Type.ENCRYPT) {
+                agentConfig.setAccessToken(protectedValueDecrypter.encrypt(protectedValue.getValue()));
+                return true;
+            }
+        }
+        return false;
     }
 }

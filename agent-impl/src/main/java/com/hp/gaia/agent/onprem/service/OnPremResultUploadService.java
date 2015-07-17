@@ -1,7 +1,9 @@
 package com.hp.gaia.agent.onprem.service;
 
+import com.hp.gaia.agent.config.ProtectedValue;
 import com.hp.gaia.agent.config.ProviderConfig;
 import com.hp.gaia.agent.config.Proxy;
+import com.hp.gaia.agent.service.ProtectedValueDecrypter;
 import com.hp.gaia.agent.service.ResultUploadServiceBase;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpHost;
@@ -20,6 +22,9 @@ public class OnPremResultUploadService extends ResultUploadServiceBase {
 
     @Autowired
     private OnPremAgentConfigService onPremAgentConfigService;
+
+    @Autowired
+    private ProtectedValueDecrypter protectedValueDecrypter;
 
     @Override
     protected void configureAuthentication(ProviderConfig providerConfig, HttpMessage httpRequest) {
@@ -42,15 +47,31 @@ public class OnPremResultUploadService extends ResultUploadServiceBase {
     protected void configureProxyCredentials(final HttpClientBuilder httpClientBuilder) {
         // configure proxy credentials on http client
         CredentialsProvider credsProvider = new BasicCredentialsProvider();
-        if (onPremAgentConfigService.getProxy() != null) {
-            Proxy proxy = onPremAgentConfigService.getProxy();
+        Proxy proxy = onPremAgentConfigService.getProxy();
+        if (proxy != null) {
+            String proxyPassword = getProxyPassword();
             if (!StringUtils.isEmpty(proxy.getHttpProxy()) && !StringUtils.isEmpty(proxy.getHttpProxyUser()) &&
-                    !StringUtils.isEmpty(proxy.getHttpProxyPassword())) {
+                    !StringUtils.isEmpty(proxyPassword)) {
                 URL proxyURL = proxy.getHttpProxyURL();
                 credsProvider.setCredentials(new AuthScope(proxyURL.getHost(), proxyURL.getPort()),
-                        new UsernamePasswordCredentials(proxy.getHttpProxyUser(), proxy.getHttpProxyPassword()));
+                        new UsernamePasswordCredentials(proxy.getHttpProxyUser(), proxyPassword));
             }
         }
         httpClientBuilder.setDefaultCredentialsProvider(credsProvider);
+    }
+
+    public String getProxyPassword() {
+        Proxy proxy = onPremAgentConfigService.getProxy();
+        if (proxy != null) {
+            if (proxy.getHttpProxyPassword() != null) {
+                ProtectedValue protectedValue = proxy.getHttpProxyPassword();
+                if (protectedValue.getType() == ProtectedValue.Type.ENCRYPTED) {
+                    return protectedValueDecrypter.decrypt(protectedValue);
+                } else {
+                    return protectedValue.getValue();
+                }
+            }
+        }
+        return null;
     }
 }

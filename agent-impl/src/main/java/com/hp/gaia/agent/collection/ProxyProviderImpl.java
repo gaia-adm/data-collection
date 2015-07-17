@@ -1,6 +1,8 @@
 package com.hp.gaia.agent.collection;
 
+import com.hp.gaia.agent.config.ProtectedValue;
 import com.hp.gaia.agent.config.Proxy;
+import com.hp.gaia.agent.service.ProtectedValueDecrypter;
 import com.hp.gaia.provider.ProxyProvider;
 import org.apache.commons.lang.StringUtils;
 
@@ -12,9 +14,12 @@ import java.util.List;
 
 public class ProxyProviderImpl implements ProxyProvider {
 
+    private final ProtectedValueDecrypter protectedValueDecrypter;
+
     private final Proxy proxy;
 
-    public ProxyProviderImpl(final Proxy proxy) {
+    public ProxyProviderImpl(final ProtectedValueDecrypter protectedValueDecrypter, final Proxy proxy) {
+        this.protectedValueDecrypter = protectedValueDecrypter;
         this.proxy = proxy;
     }
 
@@ -39,7 +44,14 @@ public class ProxyProviderImpl implements ProxyProvider {
     @Override
     public String getProxyPassword() {
         if (proxy != null) {
-            return proxy.getHttpProxyPassword();
+            if (proxy.getHttpProxyPassword() != null) {
+                ProtectedValue protectedValue = proxy.getHttpProxyPassword();
+                if (protectedValue.getType() == ProtectedValue.Type.ENCRYPTED) {
+                    return protectedValueDecrypter.decrypt(protectedValue);
+                } else {
+                    return protectedValue.getValue();
+                }
+            }
         }
         return null;
     }

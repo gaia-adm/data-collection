@@ -3,6 +3,7 @@ package com.hp.gaia.agent.onprem.config;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.hp.gaia.agent.config.Credentials;
 
 import java.io.File;
@@ -17,7 +18,8 @@ public class ConfigUtils {
     private static ObjectMapper getObjectMapper() {
         if (mapper == null) {
             mapper = new ObjectMapper();
-            mapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
+            mapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT)
+                    .enable(SerializationFeature.INDENT_OUTPUT);
         }
         return mapper;
     }
@@ -27,6 +29,14 @@ public class ConfigUtils {
             return getObjectMapper().readValue(configFile, configClass);
         } catch (IOException e) {
             throw new RuntimeException("Failed to parse configuration file " + configFile.getName(), e);
+        }
+    }
+
+    public static void writeConfig(File configFile, Object config) {
+        try {
+            getObjectMapper().writeValue(configFile, config);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to write configuration file " + configFile.getName(), e);
         }
     }
 

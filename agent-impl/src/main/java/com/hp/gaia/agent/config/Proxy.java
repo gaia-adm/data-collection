@@ -1,6 +1,9 @@
 package com.hp.gaia.agent.config;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -14,12 +17,15 @@ public class Proxy {
     private String httpProxyUser;
 
     @JsonProperty("httpProxyPassword")
-    private String httpProxyPassword;
+    @JsonDeserialize(converter = ProtectedValueInConverter.class)
+    @JsonSerialize(converter = ProtectedValueOutConverter.class)
+    private ProtectedValue httpProxyPassword;
 
     public String getHttpProxy() {
         return httpProxy;
     }
 
+    @JsonIgnore
     public URL getHttpProxyURL() {
         if (httpProxy == null) {
             return null;
@@ -35,8 +41,12 @@ public class Proxy {
         return httpProxyUser;
     }
 
-    public String getHttpProxyPassword() {
+    public ProtectedValue getHttpProxyPassword() {
         return httpProxyPassword;
+    }
+
+    public void setHttpProxyPassword(final ProtectedValue httpProxyPassword) {
+        this.httpProxyPassword = httpProxyPassword;
     }
 
     @Override

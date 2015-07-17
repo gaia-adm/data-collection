@@ -1,20 +1,26 @@
 package com.hp.gaia.agent.onprem.service;
 
+import com.hp.gaia.agent.config.ProtectedValue;
+import com.hp.gaia.agent.config.ProtectedValue.Type;
 import com.hp.gaia.agent.config.ProviderConfig;
 import com.hp.gaia.agent.config.Proxy;
 import com.hp.gaia.agent.onprem.config.ConfigUtils;
 import com.hp.gaia.agent.onprem.config.ProvidersConfig;
+import com.hp.gaia.agent.service.ProtectedValueDecrypter;
 import com.hp.gaia.agent.service.ProvidersConfigService;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class OnPremProvidersConfigService extends ConfigurationService implements ProvidersConfigService {
 
@@ -23,6 +29,9 @@ public class OnPremProvidersConfigService extends ConfigurationService implement
     private static final int DEFAULT_RUN_PERIOD = 60; // every 60 minutes
 
     private Map<String, ProviderConfig> providerConfigMap;
+
+    @Autowired
+    private ProtectedValueDecrypter protectedValueDecrypter;
 
     @PostConstruct
     public void init() {
@@ -34,12 +43,17 @@ public class OnPremProvidersConfigService extends ConfigurationService implement
         final Proxy globalProxy = providersConfig.getProxy();
 
         final List<ProviderConfig> providers = providersConfig.getProviders();
+        validate(providers);
+        boolean saveNewFile = encryptNeededValues(providersConfig);
+        if (saveNewFile) {
+            File newConfigFile = new File(providersConfigFile.getAbsolutePath() + ".encrypted");
+            if (!newConfigFile.exists() || newConfigFile.canWrite()) {
+                ConfigUtils.writeConfig(newConfigFile, providersConfig);
+            }
+        }
+        // store provider configs in local map
         if (providers != null) {
             for (final ProviderConfig providerConfig : providers) {
-                validate(providerConfig);
-                if (providerConfigMap.containsKey(providerConfig.getConfigId())) {
-                    throw new IllegalStateException("Duplicate provider configurationId " + providerConfig.getConfigId());
-                }
                 providerConfigMap.put(providerConfig.getConfigId(),
                         makeSafeProviderConfig(providerConfig, globalProxy));
             }
@@ -81,6 +95,21 @@ public class OnPremProvidersConfigService extends ConfigurationService implement
         return providerConfigMap.containsKey(providerConfigId);
     }
 
+    private static void validate(final List<ProviderConfig> providers) {
+        Set<String> providerConfigIds = new HashSet<>();
+        if (providers != null) {
+            for (final ProviderConfig providerConfig : providers) {
+                validate(providerConfig);
+            }
+            for (final ProviderConfig providerConfig : providers) {
+                if (providerConfigIds.contains(providerConfig.getConfigId())) {
+                    throw new IllegalStateException("Duplicate provider configurationId " + providerConfig.getConfigId());
+                }
+                providerConfigIds.add(providerConfig.getConfigId());
+            }
+        }
+    }
+
     private static void validate(final ProviderConfig providerConfig) {
         Validate.notNull(providerConfig);
         if (StringUtils.isEmpty(providerConfig.getConfigId())) {
@@ -96,5 +125,30 @@ public class OnPremProvidersConfigService extends ConfigurationService implement
             // validate proxy URL
             providerConfig.getProxy().getHttpProxyURL();
         }
+    }
+
+    private boolean encryptNeededValues(final ProvidersConfig providersConfig) {
+        boolean result = encryptProxyPassword(providersConfig.getProxy());
+        final List<ProviderConfig> providerConfigs = providersConfig.getProviders();
+        if (providerConfigs != null) {
+            for (ProviderConfig providerConfig : providerConfigs) {
+                if (encryptProxyPassword(providerConfig.getProxy())) {
+                    result = true;
+                }
+            }
+        }
+
+        return result;
+    }
+
+    private boolean encryptProxyPassword(Proxy proxy) {
+        if (proxy != null) {
+            if (proxy.getHttpProxyPassword() != null && proxy.getHttpProxyPassword().getType() == Type.ENCRYPT) {
+                ProtectedValue newProxyPassword = protectedValueDecrypter.encrypt(proxy.getHttpProxyPassword().getValue());
+                proxy.setHttpProxyPassword(newProxyPassword);
+                return true;
+            }
+        }
+        return false;
     }
 }

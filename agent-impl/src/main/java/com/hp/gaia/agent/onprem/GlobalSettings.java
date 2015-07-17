@@ -18,7 +18,7 @@ public class GlobalSettings {
     }
 
     public static File getConfigDir() {
-        return new File(getWorkingDir() + File.separatorChar + "conf" + File.separatorChar);
+        return new File(getWorkingDir() + File.separatorChar + "conf");
     }
 
     static void setWorkingDir(String newDir) {

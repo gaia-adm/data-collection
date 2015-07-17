@@ -1,6 +1,8 @@
 package com.hp.gaia.agent.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 public class AgentConfig {
 
@@ -8,8 +10,10 @@ public class AgentConfig {
     private String gaiaLocation;
 
     // valid only for on-prem deployment, for cloud deployment there is accessToken per tenant
+    @JsonDeserialize(converter = ProtectedValueInConverter.class)
+    @JsonSerialize(converter = ProtectedValueOutConverter.class)
     @JsonProperty("accessToken")
-    private String accessToken;
+    private ProtectedValue accessToken;
 
     @JsonProperty("workerPool")
     private Integer workerPool;
@@ -30,8 +34,12 @@ public class AgentConfig {
         return gaiaLocation;
     }
 
-    public String getAccessToken() {
+    public ProtectedValue getAccessToken() {
         return accessToken;
+    }
+
+    public void setAccessToken(final ProtectedValue accessToken) {
+        this.accessToken = accessToken;
     }
 
     public Integer getWorkerPool() {

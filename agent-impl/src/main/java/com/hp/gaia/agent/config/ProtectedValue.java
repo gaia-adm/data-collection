@@ -11,7 +11,7 @@ public class ProtectedValue {
          */
         PLAIN("plain"),
         /**
-         * Value is secret and should be encrypted, but is plain.
+         * Value is secret and should be encrypted, but it is plain.
          */
         ENCRYPT("encrypt"),
         /**
