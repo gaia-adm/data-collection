@@ -7,6 +7,6 @@
 
     <context:annotation-config/>
 
-    <bean id="dummy.dummyDataProvider" class="com.hp.gaia.provider.dummy.DummyDataProvider"/>
+    <bean id="dummy_dummyDataProvider" class="com.hp.gaia.provider.dummy.DummyDataProvider"/>
 
 </beans>
