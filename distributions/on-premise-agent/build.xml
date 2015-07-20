@@ -1,0 +1,44 @@
+<project name="prepare on-prem agent instance" default="build" basedir=".">
+
+    <target name="build">
+        <property name="agent.dist" value="${project.build.directory}/agent-dist/gaia-on-premise-agent"/>
+
+        <delete dir="${agent.dist}"/>
+
+        <copy todir="${agent.dist}" overwrite="true">
+            <fileset dir="${basedir}/src/agent-home"/>
+        </copy>
+
+        <copy todir="${agent.dist}/lib" overwrite="true">
+            <fileset dir="${project.build.directory}/dep-jars/compile" includes="*.jar"/>
+            <fileset dir="${project.build.directory}/dep-jars/runtime" includes="*.jar" erroronmissingdir="false"/>
+        </copy>
+
+        <path id="build.classpath">
+          <fileset dir="${agent.dist}/lib">
+             <include name="*.jar"/>
+          </fileset>
+        </path>
+
+        <pathconvert property="manifest.classpath" pathsep=" ">
+          <path refid="build.classpath"/>
+          <mapper>
+            <flattenmapper/>
+          </mapper>
+        </pathconvert>
+
+        <jar destfile="${agent.dist}/lib/gaia-agent.jar">
+            <fileset dir="${project.build.directory}/gaia-classes/compile"/>
+            <fileset dir="${project.build.directory}/gaia-classes/runtime" erroronmissingdir="false"/>
+            <manifest>
+                <attribute name="Main-Class"
+                           value="com.hp.gaia.agent.onprem.AgentStartup"/>
+                <attribute name="Class-Path" value="${manifest.classpath}"/>
+            </manifest>
+        </jar>
+
+        <zip file="${project.build.directory}/gaia-on-premise-agent.zip">
+            <fileset dir="${project.build.directory}/agent-dist"/>
+        </zip>
+    </target>
+</project>

@@ -1,5 +1,6 @@
 package com.hp.gaia.agent.onprem.config;
 
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,7 +20,8 @@ public class ConfigUtils {
         if (mapper == null) {
             mapper = new ObjectMapper();
             mapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT)
-                    .enable(SerializationFeature.INDENT_OUTPUT);
+                    .enable(SerializationFeature.INDENT_OUTPUT)
+                    .enable(JsonParser.Feature.ALLOW_COMMENTS);
         }
         return mapper;
     }

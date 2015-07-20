@@ -1,0 +1,12 @@
+{
+  /* Location of GAIA result upload service */
+  "gaiaLocation": "http://result-upload-service:9006",
+  /* OAuth 2.0 Access token for authentication to GAIA. Use "plain" to keep the value unencrypted or "encrypt" to have it encrypted. */
+  //"accessToken": {"encrypt": "991c94a9-0f20-4f63-9593-cb2af9760937"},
+  /* Worker pool determines how many data collections can execute in parallel */
+  "workerPool": 2,
+  /* Socket read timeout in milliseconds */
+  "soTimeout": 60000,
+  /* Connect timeout in milliseconds when establishing connection to GAIA */
+  "connectTimeout": 30000
+}
