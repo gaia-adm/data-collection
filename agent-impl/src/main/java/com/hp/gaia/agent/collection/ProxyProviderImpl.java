@@ -9,8 +9,6 @@ import org.apache.commons.lang.StringUtils;
 import java.net.InetSocketAddress;
 import java.net.Proxy.Type;
 import java.net.URL;
-import java.util.Collections;
-import java.util.List;
 
 public class ProxyProviderImpl implements ProxyProvider {
 
@@ -24,12 +22,12 @@ public class ProxyProviderImpl implements ProxyProvider {
     }
 
     @Override
-    public List<java.net.Proxy> getProxyList() {
+    public java.net.Proxy getProxy() {
         if (proxy != null && !StringUtils.isEmpty(proxy.getHttpProxy())) {
             URL proxyUrl = proxy.getHttpProxyURL();
-            return Collections.singletonList(new java.net.Proxy(Type.HTTP, InetSocketAddress.createUnresolved(proxyUrl.getHost(), proxyUrl.getPort())));
+            return new java.net.Proxy(Type.HTTP, InetSocketAddress.createUnresolved(proxyUrl.getHost(), proxyUrl.getPort()));
         } else {
-            return Collections.emptyList();
+            return java.net.Proxy.NO_PROXY;
         }
     }
 
