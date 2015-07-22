@@ -90,5 +90,17 @@
                 </dependency>
             </dependencies>
         </profile>
+        <profile>
+            <id>sample-weather-provider</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>com.hp.gaia.data-collection</groupId>
+                    <artifactId>sample-weather-provider</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
     </profiles>
 </project>

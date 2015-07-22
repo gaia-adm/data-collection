@@ -14,7 +14,7 @@
         </RollingFile>
     </Appenders>
     <Loggers>
-        <Logger name="com.hp.gaia.agent" level="debug"/>
+        <Logger name="com.hp.gaia" level="debug"/>
         <Root level="info">
             <AppenderRef ref="Console"/>
             <AppenderRef ref="File"/>

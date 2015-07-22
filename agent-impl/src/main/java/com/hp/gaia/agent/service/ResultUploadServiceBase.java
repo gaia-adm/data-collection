@@ -73,9 +73,14 @@ public abstract class ResultUploadServiceBase implements ResultUploadService {
 
     @Override
     public void sendData(final ProviderConfig providerConfig, final Data data) {
-        InputStream is = data.getInputStream();
+        final String uploadDataURI = getUploadDataURI(data);
+        InputStream is = null;
         try {
-            final String uploadDataURI = getUploadDataURI(data);
+            is = data.getInputStream();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to send data to " + uploadDataURI, e);
+        }
+        try {
             HttpPost httpRequest = new HttpPost(uploadDataURI);
             ContentType contentType = ContentType.parse(data.getContentType());
             InputStreamEntity reqEntity = new InputStreamEntity(is, -1, contentType);

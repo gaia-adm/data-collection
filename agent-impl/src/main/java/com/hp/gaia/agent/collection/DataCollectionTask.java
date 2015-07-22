@@ -105,5 +105,6 @@ public class DataCollectionTask implements Runnable {
         resultUploadService.sendData(providerConfig, data);
         collectionState.setBookmark(data.bookmark());
         collectionStateService.saveCollectionState(collectionState);
+        IOUtils.closeQuietly(data);
     }
 }

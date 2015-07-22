@@ -1,6 +1,8 @@
 package com.hp.gaia.provider;
 
 import javax.validation.constraints.NotNull;
+import java.io.Closeable;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
@@ -9,7 +11,7 @@ import java.util.Map;
  * tests - typically one page). A result processor must be registered at GAIA result-processing-service for processing
  * this
  */
-public interface Data {
+public interface Data extends Closeable {
 
     /**
      * Returns metadata of content. See {@link MetadataConstants} for possible keys.
@@ -30,7 +32,7 @@ public interface Data {
      * {@link Data#getContentType()}.
      */
     @NotNull
-    InputStream getInputStream();
+    InputStream getInputStream() throws IOException;
 
     /**
      * Bookmark that identifies this data block or the first item if the stream contains a list of items. Can be used to

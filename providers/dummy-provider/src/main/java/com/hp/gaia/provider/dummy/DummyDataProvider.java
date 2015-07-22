@@ -82,5 +82,10 @@ public class DummyDataProvider implements DataProvider {
         public String bookmark() {
             return String.valueOf(new Random().nextInt(100));
         }
+
+        @Override
+        public void close() throws IOException {
+
+        }
     }
 }
