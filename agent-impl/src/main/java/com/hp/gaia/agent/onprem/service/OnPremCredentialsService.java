@@ -10,27 +10,20 @@ import com.hp.gaia.agent.service.ProtectedValueDecrypter;
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.annotation.PostConstruct;
 import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class OnPremCredentialsService extends ConfigurationService implements CredentialsService {
-
-    private static final String CREDENTIALS_CONFIG = "credentials.json";
+public class OnPremCredentialsService implements CredentialsService {
 
     private Map<String, Credentials> credentialsMap;
 
     @Autowired
     private ProtectedValueDecrypter protectedValueDecrypter;
 
-    @PostConstruct
-    public void init() {
-        File credentialsConfigFile = getConfigFile(CREDENTIALS_CONFIG);
-        verifyFile(credentialsConfigFile);
-
+    public void init(File credentialsConfigFile) {
         CredentialsConfig credentialsConfig = ConfigUtils.readCredentialsConfig(credentialsConfigFile);
         boolean saveNewFile = encryptNeededValues(credentialsConfig);
         if (saveNewFile) {

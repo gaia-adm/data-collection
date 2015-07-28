@@ -1,0 +1,6 @@
+{
+  "gaiaLocation": "http://result-upload-service:8084",
+  "accessToken": {
+    "plain": "accessToken1"
+  }
+}

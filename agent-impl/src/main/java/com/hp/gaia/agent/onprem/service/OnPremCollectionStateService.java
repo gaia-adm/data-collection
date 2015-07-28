@@ -2,7 +2,6 @@ package com.hp.gaia.agent.onprem.service;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hp.gaia.agent.onprem.GlobalSettings;
 import com.hp.gaia.agent.service.CollectionState;
 import com.hp.gaia.agent.service.CollectionState.Result;
 import com.hp.gaia.agent.service.CollectionState.State;
@@ -13,7 +12,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -26,11 +24,11 @@ public class OnPremCollectionStateService implements CollectionStateService {
 
     private static final Logger logger = LogManager.getLogger(OnPremCollectionStateService.class);
 
-    private static final String STATE_DIR_NAME = "state";
-
     private Map<String, CollectionState> collectionStateMap;
 
     private ObjectMapper objectMapper;
+
+    private File stateDir;
 
     @Autowired
     private ProvidersConfigService providersConfigService;
@@ -40,16 +38,15 @@ public class OnPremCollectionStateService implements CollectionStateService {
         objectMapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
     }
 
-    @PostConstruct
-    public void init() {
+    public void init(File stateDir) {
         // do basic validation
-        File stateDir = getStateDir();
         if (!stateDir.exists()) {
             throw new IllegalStateException("Directory " + stateDir.getAbsolutePath() + " doesn't exist");
         }
         if (!stateDir.isDirectory()) {
             throw new IllegalStateException(stateDir.getAbsolutePath() + " is not a directory");
         }
+        this.stateDir = stateDir;
         collectionStateMap = new HashMap<>();
         // read all state files
         List<CollectionState> collectionStates = readAllCollectionStates(stateDir);
@@ -135,12 +132,8 @@ public class OnPremCollectionStateService implements CollectionStateService {
         collectionStateMap.remove(providerConfigId);
     }
 
-    private static File getStateFile(final String providerConfigId) {
-        return new File(getStateDir(), providerConfigId + "-state.json");
-    }
-
-    private static File getStateDir() {
-        return new File(GlobalSettings.getWorkingDir(), STATE_DIR_NAME);
+    private File getStateFile(final String providerConfigId) {
+        return new File(stateDir, providerConfigId + "-state.json");
     }
 
     private static class StateFileFilter implements FilenameFilter {

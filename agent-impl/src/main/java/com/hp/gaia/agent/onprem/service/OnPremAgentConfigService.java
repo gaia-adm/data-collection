@@ -11,12 +11,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.annotation.PostConstruct;
 import java.io.File;
 
-public class OnPremAgentConfigService extends ConfigurationService implements AgentConfigService {
-
-    private static final String AGENT_CONFIG = "agent.json";
+public class OnPremAgentConfigService implements AgentConfigService {
 
     private static final int DEFAULT_WORKER_POOL = 5;
     private static final int DEFAULT_SO_TIMEOUT = 60000;
@@ -27,11 +24,7 @@ public class OnPremAgentConfigService extends ConfigurationService implements Ag
     @Autowired
     private ProtectedValueDecrypter protectedValueDecrypter;
 
-    @PostConstruct
-    public void init() {
-        final File agentConfigFile = getConfigFile(AGENT_CONFIG);
-        verifyFile(agentConfigFile);
-
+    public void init(final File agentConfigFile) {
         agentConfig = ConfigUtils.readConfig(agentConfigFile, AgentConfig.class);;
         validate(agentConfig);
         boolean saveNewFile = encryptNeededValues(agentConfig);
@@ -82,7 +75,7 @@ public class OnPremAgentConfigService extends ConfigurationService implements Ag
     }
 
     @Override
-    public int getConnecTimeout() {
+    public int getConnectTimeout() {
         return agentConfig.getConnectTimeout() != null ? agentConfig.getConnectTimeout() :
                 DEFAULT_CONNECT_TIMEOUT;
     }
@@ -111,10 +104,22 @@ public class OnPremAgentConfigService extends ConfigurationService implements Ag
     }
 
     private boolean encryptNeededValues(final AgentConfig agentConfig) {
+        boolean result = encryptProxyPassword(agentConfig.getProxy());
         ProtectedValue protectedValue = agentConfig.getAccessToken();
         if (protectedValue != null) {
             if (protectedValue.getType() == Type.ENCRYPT) {
                 agentConfig.setAccessToken(protectedValueDecrypter.encrypt(protectedValue.getValue()));
+                result = true;
+            }
+        }
+        return result;
+    }
+
+    private boolean encryptProxyPassword(Proxy proxy) {
+        if (proxy != null) {
+            if (proxy.getHttpProxyPassword() != null && proxy.getHttpProxyPassword().getType() == Type.ENCRYPT) {
+                ProtectedValue newProxyPassword = protectedValueDecrypter.encrypt(proxy.getHttpProxyPassword().getValue());
+                proxy.setHttpProxyPassword(newProxyPassword);
                 return true;
             }
         }

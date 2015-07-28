@@ -12,7 +12,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.annotation.PostConstruct;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,9 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class OnPremProvidersConfigService extends ConfigurationService implements ProvidersConfigService {
-
-    private static final String PROVIDERS_CONFIG = "providers.json";
+public class OnPremProvidersConfigService implements ProvidersConfigService {
 
     private static final int DEFAULT_RUN_PERIOD = 60; // every 60 minutes
 
@@ -33,10 +30,7 @@ public class OnPremProvidersConfigService extends ConfigurationService implement
     @Autowired
     private ProtectedValueDecrypter protectedValueDecrypter;
 
-    @PostConstruct
-    public void init() {
-        File providersConfigFile = getConfigFile(PROVIDERS_CONFIG);
-        verifyFile(providersConfigFile);
+    public void init(File providersConfigFile) {
         ProvidersConfig providersConfig = ConfigUtils.readConfig(providersConfigFile, ProvidersConfig.class);
 
         this.providerConfigMap = new HashMap<>();

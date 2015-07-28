@@ -33,17 +33,10 @@ public abstract class ResultUploadServiceBase implements ResultUploadService {
 
     private CloseableHttpClient httpclient;
 
-    private int maxPoolSize;
-
     @Autowired
     private AgentConfigService agentConfigService;
 
-    public void setMaxPoolSize(int maxPoolSize) {
-        this.maxPoolSize = maxPoolSize;
-    }
-
-    @PostConstruct
-    public void init() {
+    public void init(int maxPoolSize) {
         // create HTTP client
         PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
         cm.setMaxTotal(maxPoolSize);
@@ -54,7 +47,7 @@ public abstract class ResultUploadServiceBase implements ResultUploadService {
 
         // configure default request, no need to keep cookies
         RequestConfig.Builder requestConfigBuilder = RequestConfig.custom()
-                .setConnectTimeout(agentConfigService.getConnecTimeout())
+                .setConnectTimeout(agentConfigService.getConnectTimeout())
                 .setCookieSpec(CookieSpecs.IGNORE_COOKIES);
         configureProxy(requestConfigBuilder);
         RequestConfig globalConfig = requestConfigBuilder.build();

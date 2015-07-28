@@ -18,8 +18,6 @@
     <bean id="agent_plannedCollectionProvider"
           class="com.hp.gaia.agent.onprem.service.OnPremPlannedCollectionProvider"/>
 
-    <bean id="agent_resultUploadService" class="com.hp.gaia.agent.onprem.service.OnPremResultUploadService">
-        <property name="maxPoolSize" value="#{agent_agentConfigService.workerPool}"/>
-    </bean>
+    <bean id="agent_resultUploadService" class="com.hp.gaia.agent.onprem.service.OnPremResultUploadService"/>
 
 </beans>

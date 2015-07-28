@@ -1,0 +1,16 @@
+{
+  "gaiaLocation": "http://result-upload-service:8085",
+  "accessToken": {
+    "plain": "accessToken2"
+  },
+  "workerPool": 6,
+  "soTimeout": 40000,
+  "connectTimeout": 20000,
+  "proxy": {
+    "httpProxy": "http://proxy.bbn.hp.com:8081",
+    "httpProxyUser": "user1",
+    "httpProxyPassword": {
+      "plain": "secretPassword1"
+    }
+  }
+}

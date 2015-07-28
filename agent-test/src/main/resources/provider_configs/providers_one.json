@@ -1,0 +1,20 @@
+{
+  "providers": [
+    {
+      "configId": "testConfig1",
+      "providerId": "testProviderId1",
+      "credentialsId": "credentials1",
+      "properties": {
+        "city": "Prague"
+      },
+      "runPeriod": 40
+    }
+  ],
+  "proxy": {
+    "httpProxy": "http://proxy.bbn.hp.com:8082",
+    "httpProxyUser": "user2",
+    "httpProxyPassword": {
+      "encrypted" : "rCj8wi54deO1yGK0qw/3zA=="
+    }
+  }
+}
