@@ -1,0 +1,8 @@
+{
+  "configId": "config1",
+  "lastCollectionTimestamp": 1438088002703,
+  "nextCollectionTimestamp": 1438091605500,
+  "bookmark": "someBookmark",
+  "state": "FINISHED",
+  "result": "SUCCESS"
+}

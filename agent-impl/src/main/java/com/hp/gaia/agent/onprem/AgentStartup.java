@@ -9,7 +9,7 @@ import java.net.URL;
 import java.nio.file.Paths;
 
 /**
- * Main class for on-premise agent startup. Handles command line options.
+ * Main class for on-premise agent startup.
  */
 public class AgentStartup {
 

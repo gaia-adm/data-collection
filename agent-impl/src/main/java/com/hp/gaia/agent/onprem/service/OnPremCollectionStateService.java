@@ -7,6 +7,7 @@ import com.hp.gaia.agent.service.CollectionState.Result;
 import com.hp.gaia.agent.service.CollectionState.State;
 import com.hp.gaia.agent.service.CollectionStateService;
 import com.hp.gaia.agent.service.ProvidersConfigService;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -112,7 +113,7 @@ public class OnPremCollectionStateService implements CollectionStateService {
         saveToFile(collectionState);
 
         // save locally
-        collectionStateMap.put(providerConfigId, collectionState);
+        collectionStateMap.put(providerConfigId, (CollectionState) ObjectUtils.clone(collectionState));
     }
 
     private void saveToFile(final CollectionState collectionState) {

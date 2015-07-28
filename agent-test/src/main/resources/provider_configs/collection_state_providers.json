@@ -1,0 +1,12 @@
+{
+  "providers": [
+    {
+      "configId": "config1",
+      "providerId": "testProviderId1"
+    },
+    {
+      "configId": "config2",
+      "providerId": "testProviderId2"
+    }
+  ]
+}

@@ -2,7 +2,7 @@ package com.hp.gaia.agent.service;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class CollectionState {
+public class CollectionState implements Cloneable {
 
     public enum State {
         /**
@@ -89,6 +89,58 @@ public class CollectionState {
 
     public void setResult(final Result result) {
         this.result = result;
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof CollectionState)) {
+            return false;
+        }
+
+        final CollectionState that = (CollectionState) o;
+
+        if (providerConfigId != null ?
+                !providerConfigId.equals(that.providerConfigId) :
+                that.providerConfigId != null) {
+            return false;
+        }
+        if (lastCollectionTimestamp != null ?
+                !lastCollectionTimestamp.equals(that.lastCollectionTimestamp) :
+                that.lastCollectionTimestamp != null) {
+            return false;
+        }
+        if (nextCollectionTimestamp != null ?
+                !nextCollectionTimestamp.equals(that.nextCollectionTimestamp) :
+                that.nextCollectionTimestamp != null) {
+            return false;
+        }
+        if (bookmark != null ? !bookmark.equals(that.bookmark) : that.bookmark != null) {
+            return false;
+        }
+        if (state != that.state) {
+            return false;
+        }
+        return result == that.result;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result1 = providerConfigId != null ? providerConfigId.hashCode() : 0;
+        result1 = 31 * result1 + (lastCollectionTimestamp != null ? lastCollectionTimestamp.hashCode() : 0);
+        result1 = 31 * result1 + (nextCollectionTimestamp != null ? nextCollectionTimestamp.hashCode() : 0);
+        result1 = 31 * result1 + (bookmark != null ? bookmark.hashCode() : 0);
+        result1 = 31 * result1 + (state != null ? state.hashCode() : 0);
+        result1 = 31 * result1 + (result != null ? result.hashCode() : 0);
+        return result1;
     }
 
     @Override
