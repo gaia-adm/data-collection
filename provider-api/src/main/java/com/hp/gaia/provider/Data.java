@@ -20,17 +20,19 @@ public interface Data extends Closeable {
     Map<String, String> getMetadata();
 
     /**
-     * HTTP Content-Type value (i.e application/xml, text/plain). It is recommended to add "charset=utf-8" and use UTF-8
-     * for input stream character encoding instead of the default encoding.
-     *
-     * @see <a href="https://tools.ietf.org/html/rfc1049">rfc1049</a>
+     * MIME type value (i.e application/xml, text/plain).
      */
     @NotNull
-    String getContentType();
+    String getMimeType();
+
+    /**
+     * Returns charset of the content. If the content is binary then returns null.
+     */
+    String getCharset();
 
     /**
      * Returns input stream for reading data. The data may be binary, textual etc. Its content type is identified by
-     * {@link Data#getContentType()}.
+     * {@link Data#getMimeType()}.
      */
     @NotNull
     InputStream getInputStream() throws IOException;

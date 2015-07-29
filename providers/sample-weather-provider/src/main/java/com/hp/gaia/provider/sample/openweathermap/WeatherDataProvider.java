@@ -13,6 +13,7 @@ import org.apache.http.HttpHost;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
@@ -25,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -168,8 +170,18 @@ public class WeatherDataProvider implements DataProvider {
         }
 
         @Override
-        public String getContentType() {
-            return response.getEntity().getContentType().getValue();
+        public String getMimeType() {
+            return ContentType.get(response.getEntity()).getMimeType();
+        }
+
+        @Override
+        public String getCharset() {
+            Charset charset = ContentType.get(response.getEntity()).getCharset();
+            if (charset != null) {
+                return charset.name();
+            } else {
+                return null;
+            }
         }
 
         @Override

@@ -74,7 +74,7 @@ public abstract class ResultUploadServiceBase implements ResultUploadService {
         }
         try {
             HttpPost httpRequest = new HttpPost(uploadDataURI);
-            ContentType contentType = ContentType.parse(data.getContentType());
+            ContentType contentType = ContentType.create(data.getMimeType(), data.getCharset());
             InputStreamEntity reqEntity = new InputStreamEntity(is, -1, contentType);
             reqEntity.setChunked(true);
             httpRequest.setEntity(reqEntity);

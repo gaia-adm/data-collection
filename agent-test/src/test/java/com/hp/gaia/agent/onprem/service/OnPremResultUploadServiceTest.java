@@ -75,17 +75,17 @@ public class OnPremResultUploadServiceTest extends EasyMockSupport {
         metadata.put(MetadataConstants.METRIC, "testMetric");
         metadata.put(MetadataConstants.CATEGORY, "testCategory");
         String content = "{\"testKey\": \"testValue\"}";
-        MyData myData = new MyData(metadata, "application/json; charset=utf-8", content.getBytes(Charset.forName("utf-8")), "bookmark");
+        MyData myData = new MyData(metadata, "application/json", "UTF-8", content.getBytes(Charset.forName("UTF-8")), "bookmark");
         myHttpRequestHandler.setExpectedUriPath(expectedUriPath);
         onPremResultUploadService.sendData(providerConfig, myData);
         // verify HTTP request
         assertEquals(expectedUriPath, myHttpRequestHandler.getLastRequestUriPath());
         assertEquals(metadata, myHttpRequestHandler.getLastParams());
         Map<String, String> httpHeaders = myHttpRequestHandler.getLastHeaders();
-        assertEquals("application/json; charset=utf-8", httpHeaders.get("Content-Type"));
+        assertEquals("application/json; charset=UTF-8", httpHeaders.get("Content-Type"));
         assertEquals("Bearer myAccessToken", httpHeaders.get("Authorization"));
         assertEquals("chunked", httpHeaders.get("Transfer-Encoding"));
-        String lastContent = new String(myHttpRequestHandler.getLastContent(), Charset.forName("utf-8"));
+        String lastContent = new String(myHttpRequestHandler.getLastContent(), Charset.forName("UTF-8"));
         assertEquals(content, lastContent);
         // verify mocks
         verifyAll();
@@ -107,7 +107,7 @@ public class OnPremResultUploadServiceTest extends EasyMockSupport {
         metadata.put(MetadataConstants.METRIC, "testMetric");
         metadata.put(MetadataConstants.CATEGORY, "testCategory");
         String content = "{\"testKey\": \"testValue\"}";
-        MyData myData = new MyData(metadata, "application/json; charset=utf-8", content.getBytes(Charset.forName("utf-8")), "bookmark");
+        MyData myData = new MyData(metadata, "application/json", "UTF-8", content.getBytes(Charset.forName("UTF-8")), "bookmark");
         myHttpRequestHandler.setExpectedUriPath(null);
         try {
             onPremResultUploadService.sendData(providerConfig, myData);

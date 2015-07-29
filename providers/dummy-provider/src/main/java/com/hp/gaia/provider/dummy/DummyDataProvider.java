@@ -67,8 +67,13 @@ public class DummyDataProvider implements DataProvider {
         }
 
         @Override
-        public String getContentType() {
-            return "application/json; charset=utf-8";
+        public String getMimeType() {
+            return "application/json";
+        }
+
+        @Override
+        public String getCharset() {
+            return "utf-8";
         }
 
         @Override

@@ -11,13 +11,16 @@ public class MyData implements Data {
 
     private Map<String, String> metadata;
     private String contentType;
+    private String charset;
     private byte[] content;
     private String bookmark;
 
-    public MyData(final Map<String, String> metadata, final String contentType, final byte[] content,
+    public MyData(final Map<String, String> metadata, final String mimeType, final String charset,
+                  final byte[] content,
                   final String bookmark) {
         this.metadata = metadata;
-        this.contentType = contentType;
+        this.contentType = mimeType;
+        this.charset = charset;
         this.content = content;
         this.bookmark = bookmark;
     }
@@ -28,8 +31,13 @@ public class MyData implements Data {
     }
 
     @Override
-    public String getContentType() {
+    public String getMimeType() {
         return contentType;
+    }
+
+    @Override
+    public String getCharset() {
+        return charset;
     }
 
     @Override
