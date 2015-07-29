@@ -14,16 +14,6 @@ public final class MetadataConstants {
      */
     public static final String CATEGORY = "category";
 
-    /**
-     * test-name,job-name,defect-number,sha-of-commit
-     */
-    public static final String NAME = "name";
-
-    /**
-     * ci-server,qc-name/project,scm-repository
-     */
-    public static final String SOURCE = "source";
-
     private MetadataConstants() {
     }
 }

@@ -63,7 +63,6 @@ public class DummyDataProvider implements DataProvider {
             Map<String, String> metadata = new HashMap<>();
             metadata.put(MetadataConstants.METRIC, "dummy");
             metadata.put(MetadataConstants.CATEGORY, "dummy");
-            metadata.put(MetadataConstants.NAME, "3");
             return metadata;
         }
 

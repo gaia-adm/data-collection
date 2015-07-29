@@ -21,7 +21,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,7 +33,7 @@ public abstract class ResultUploadServiceBase implements ResultUploadService {
     private CloseableHttpClient httpclient;
 
     @Autowired
-    private AgentConfigService agentConfigService;
+    protected AgentConfigService agentConfigService;
 
     public void init(int maxPoolSize) {
         // create HTTP client

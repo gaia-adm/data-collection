@@ -2,6 +2,7 @@ package com.hp.gaia.agent.onprem.service;
 
 import com.hp.gaia.agent.config.ProviderConfig;
 import com.hp.gaia.agent.config.Proxy;
+import com.hp.gaia.agent.service.AgentConfigService;
 import com.hp.gaia.agent.service.ResultUploadServiceBase;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpHost;
@@ -12,24 +13,25 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.net.URL;
 
 public class OnPremResultUploadService extends ResultUploadServiceBase {
 
-    @Autowired
-    private OnPremAgentConfigService onPremAgentConfigService;
+    // for tests
+    void setAgentConfigService(final AgentConfigService agentConfigService) {
+        this.agentConfigService = agentConfigService;
+    }
 
     @Override
     protected void configureAuthentication(ProviderConfig providerConfig, HttpMessage httpRequest) {
-        httpRequest.addHeader("Authorization", "Bearer " + onPremAgentConfigService.getAccessToken());
+        httpRequest.addHeader("Authorization", "Bearer " + getOnPremAgentConfigService().getAccessToken());
     }
 
     @Override
     protected void configureProxy(RequestConfig.Builder requestConfigBuilder) {
-        if (onPremAgentConfigService.getProxy() != null) {
-            Proxy proxy = onPremAgentConfigService.getProxy();
+        final Proxy proxy = getOnPremAgentConfigService().getProxy();
+        if (proxy != null) {
             if (!StringUtils.isEmpty(proxy.getHttpProxy())) {
                 URL url = proxy.getHttpProxyURL();
                 HttpHost httpHost = new HttpHost(url.getHost(), url.getPort());
@@ -42,7 +44,7 @@ public class OnPremResultUploadService extends ResultUploadServiceBase {
     protected void configureProxyCredentials(final HttpClientBuilder httpClientBuilder) {
         // configure proxy credentials on http client
         CredentialsProvider credsProvider = new BasicCredentialsProvider();
-        Proxy proxy = onPremAgentConfigService.getProxy();
+        Proxy proxy = getOnPremAgentConfigService().getProxy();
         if (proxy != null) {
             String proxyPassword = getProxyPassword();
             if (!StringUtils.isEmpty(proxy.getHttpProxy()) && !StringUtils.isEmpty(proxy.getHttpProxyUser()) &&
@@ -55,12 +57,16 @@ public class OnPremResultUploadService extends ResultUploadServiceBase {
         httpClientBuilder.setDefaultCredentialsProvider(credsProvider);
     }
 
-    public String getProxyPassword() {
-        Proxy proxy = onPremAgentConfigService.getProxy();
+    private String getProxyPassword() {
+        Proxy proxy = getOnPremAgentConfigService().getProxy();
         if (proxy != null && proxy.getHttpProxyPassword() != null) {
             // value is always decrypted outside of onPremAgentConfigService
             return proxy.getHttpProxyPassword().getValue();
         }
         return null;
+    }
+
+    private OnPremAgentConfigService getOnPremAgentConfigService() {
+        return (OnPremAgentConfigService) agentConfigService;
     }
 }

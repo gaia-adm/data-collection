@@ -14,7 +14,8 @@ import java.util.Map;
 public interface Data extends Closeable {
 
     /**
-     * Returns metadata of content. See {@link MetadataConstants} for possible keys.
+     * Returns metadata of content. See {@link MetadataConstants} for possible keys. Metadata will be available to result
+     * processor.
      */
     Map<String, String> getMetadata();
 
