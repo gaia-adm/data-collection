@@ -1,7 +1,7 @@
 {
   "gaiaLocation": "http://result-upload-service:8087",
   "accessToken": {
-    "encrypted": "DXdPB7KAhSUIWHfKtx81Gg=="
+    "encrypted": "AvDrelTAjmnVhu1izXEf6g=="
   },
   "workerPool": 7,
   "soTimeout": 50000,
@@ -10,7 +10,7 @@
     "httpProxy": "http://proxy.bbn.hp.com:8083",
     "httpProxyUser": "user3",
     "httpProxyPassword": {
-      "encrypted" : "rCj8wi54deMstZIzLTA8/g=="
+      "encrypted": "lodgRh807dkXYm6fM3KpvQ=="
     }
   }
 }

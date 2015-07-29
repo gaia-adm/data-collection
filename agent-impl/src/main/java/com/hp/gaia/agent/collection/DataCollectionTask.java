@@ -7,7 +7,6 @@ import com.hp.gaia.agent.service.CollectionState.State;
 import com.hp.gaia.agent.service.CollectionStateService;
 import com.hp.gaia.agent.service.CredentialsService;
 import com.hp.gaia.agent.service.DataProviderRegistry;
-import com.hp.gaia.agent.service.ProtectedValueDecrypter;
 import com.hp.gaia.agent.service.ResultUploadService;
 import com.hp.gaia.provider.CredentialsProvider;
 import com.hp.gaia.provider.Data;
@@ -41,9 +40,6 @@ public class DataCollectionTask implements Runnable {
 
     @Autowired
     private ResultUploadService resultUploadService;
-
-    @Autowired
-    private ProtectedValueDecrypter protectedValueDecrypter;
 
     public void init(ProviderConfig providerConfig, CollectionState collectionState) {
         this.providerConfig = providerConfig;
@@ -83,7 +79,7 @@ public class DataCollectionTask implements Runnable {
         DataProvider dataProvider = dataProviderRegistry.getDataProvider(providerConfig.getProviderId());
         CredentialsProvider credentialsProvider = new CredentialsProviderImpl(credentialsService,
                 providerConfig.getCredentialsId());
-        ProxyProvider proxyProvider = new ProxyProviderImpl(protectedValueDecrypter, providerConfig.getProxy());
+        ProxyProvider proxyProvider = new ProxyProviderImpl(providerConfig.getProxy());
 
         DataStream dataStream = null;
         try {

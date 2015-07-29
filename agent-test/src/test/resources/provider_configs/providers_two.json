@@ -17,7 +17,7 @@
         "httpProxy": "http://proxy.bbn.hp.com:8083",
         "httpProxyUser": "user3",
         "httpProxyPassword": {
-          "encrypted" : "rCj8wi54deMstZIzLTA8/g=="
+          "encrypted": "8FMDK3hx84TJ0B45qh2T7w=="
         }
       }
     }

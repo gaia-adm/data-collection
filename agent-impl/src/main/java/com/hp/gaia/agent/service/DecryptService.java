@@ -27,9 +27,9 @@ public class DecryptService {
         try {
             PBEParameterSpec pbeParamSpec = new PBEParameterSpec(salt, iteration_count);
             PBEKeySpec pbeKeySpec = new PBEKeySpec(secret.toCharArray());
-            SecretKeyFactory keyFac = SecretKeyFactory.getInstance("PBEWithMD5AndDES"); // NON-NLS
+            SecretKeyFactory keyFac = SecretKeyFactory.getInstance("PBEwithSHA1AndDESede"); // NON-NLS
             SecretKey pbeKey = keyFac.generateSecret(pbeKeySpec);
-            Cipher pbeCipher = Cipher.getInstance("PBEWithMD5AndDES"); // NON-NLS
+            Cipher pbeCipher = Cipher.getInstance("PBEwithSHA1AndDESede"); // NON-NLS
             pbeCipher.init(Cipher.DECRYPT_MODE, pbeKey, pbeParamSpec);
             return new String(pbeCipher.doFinal(new BASE64Decoder().decodeBuffer(value)), "UTF-8");
         } catch (IOException e) {
@@ -37,16 +37,15 @@ public class DecryptService {
         } catch (GeneralSecurityException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     public String encryptValue(String value, String secret) {
         try {
             PBEParameterSpec pbeParamSpec = new PBEParameterSpec(salt, iteration_count);
             PBEKeySpec pbeKeySpec = new PBEKeySpec(secret.toCharArray());
-            SecretKeyFactory keyFac = SecretKeyFactory.getInstance("PBEWithMD5AndDES"); // NON-NLS
+            SecretKeyFactory keyFac = SecretKeyFactory.getInstance("PBEwithSHA1AndDESede"); // NON-NLS
             SecretKey pbeKey = keyFac.generateSecret(pbeKeySpec);
-            Cipher pbeCipher = Cipher.getInstance("PBEWithMD5AndDES"); // NON-NLS
+            Cipher pbeCipher = Cipher.getInstance("PBEwithSHA1AndDESede"); // NON-NLS
             pbeCipher.init(Cipher.ENCRYPT_MODE, pbeKey, pbeParamSpec);
             return new BASE64Encoder().encode(pbeCipher.doFinal(value.getBytes()));
         } catch (GeneralSecurityException e) {

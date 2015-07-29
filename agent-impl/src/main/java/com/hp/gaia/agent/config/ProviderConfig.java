@@ -68,6 +68,47 @@ public class ProviderConfig {
     }
 
     @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof ProviderConfig)) {
+            return false;
+        }
+
+        final ProviderConfig that = (ProviderConfig) o;
+
+        if (configId != null ? !configId.equals(that.configId) : that.configId != null) {
+            return false;
+        }
+        if (providerId != null ? !providerId.equals(that.providerId) : that.providerId != null) {
+            return false;
+        }
+        if (properties != null ? !properties.equals(that.properties) : that.properties != null) {
+            return false;
+        }
+        if (credentialsId != null ? !credentialsId.equals(that.credentialsId) : that.credentialsId != null) {
+            return false;
+        }
+        if (proxy != null ? !proxy.equals(that.proxy) : that.proxy != null) {
+            return false;
+        }
+        return !(runPeriod != null ? !runPeriod.equals(that.runPeriod) : that.runPeriod != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = configId != null ? configId.hashCode() : 0;
+        result = 31 * result + (providerId != null ? providerId.hashCode() : 0);
+        result = 31 * result + (properties != null ? properties.hashCode() : 0);
+        result = 31 * result + (credentialsId != null ? credentialsId.hashCode() : 0);
+        result = 31 * result + (proxy != null ? proxy.hashCode() : 0);
+        result = 31 * result + (runPeriod != null ? runPeriod.hashCode() : 0);
+        return result;
+    }
+
+    @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("ProviderConfig{");
         sb.append("configId='").append(configId).append('\'');

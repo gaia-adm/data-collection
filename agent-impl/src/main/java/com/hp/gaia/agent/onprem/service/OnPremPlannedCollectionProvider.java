@@ -18,6 +18,16 @@ public class OnPremPlannedCollectionProvider implements PlannedCollectionProvide
     @Autowired
     private OnPremProvidersConfigService onPremProvidersConfigService;
 
+    // for tests
+    void setCollectionStateService(final CollectionStateService collectionStateService) {
+        this.collectionStateService = collectionStateService;
+    }
+
+    // for tests
+    void setOnPremProvidersConfigService(final OnPremProvidersConfigService onPremProvidersConfigService) {
+        this.onPremProvidersConfigService = onPremProvidersConfigService;
+    }
+
     @Override
     public PlannedCollection findNextPlannedCollection() {
         List<ProviderConfig> configList = onPremProvidersConfigService.getProviderConfigs();

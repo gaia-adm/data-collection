@@ -1,9 +1,7 @@
 package com.hp.gaia.agent.onprem.service;
 
-import com.hp.gaia.agent.config.ProtectedValue;
 import com.hp.gaia.agent.config.ProviderConfig;
 import com.hp.gaia.agent.config.Proxy;
-import com.hp.gaia.agent.service.ProtectedValueDecrypter;
 import com.hp.gaia.agent.service.ResultUploadServiceBase;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpHost;
@@ -22,9 +20,6 @@ public class OnPremResultUploadService extends ResultUploadServiceBase {
 
     @Autowired
     private OnPremAgentConfigService onPremAgentConfigService;
-
-    @Autowired
-    private ProtectedValueDecrypter protectedValueDecrypter;
 
     @Override
     protected void configureAuthentication(ProviderConfig providerConfig, HttpMessage httpRequest) {
@@ -62,15 +57,9 @@ public class OnPremResultUploadService extends ResultUploadServiceBase {
 
     public String getProxyPassword() {
         Proxy proxy = onPremAgentConfigService.getProxy();
-        if (proxy != null) {
-            if (proxy.getHttpProxyPassword() != null) {
-                ProtectedValue protectedValue = proxy.getHttpProxyPassword();
-                if (protectedValue.getType() == ProtectedValue.Type.ENCRYPTED) {
-                    return protectedValueDecrypter.decrypt(protectedValue);
-                } else {
-                    return protectedValue.getValue();
-                }
-            }
+        if (proxy != null && proxy.getHttpProxyPassword() != null) {
+            // value is always decrypted outside of onPremAgentConfigService
+            return proxy.getHttpProxyPassword().getValue();
         }
         return null;
     }

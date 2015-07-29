@@ -34,6 +34,7 @@ public class OnPremAgentConfigService implements AgentConfigService {
                 ConfigUtils.writeConfig(newConfigFile, agentConfig);
             }
         }
+        decryptValues(agentConfig);
     }
 
     /**
@@ -42,11 +43,7 @@ public class OnPremAgentConfigService implements AgentConfigService {
     public String getAccessToken() {
         ProtectedValue protectedValue = agentConfig.getAccessToken();
         if (protectedValue != null) {
-            if (protectedValue.getType() == Type.ENCRYPTED) {
-                return protectedValueDecrypter.decrypt(protectedValue);
-            } else {
-                return protectedValue.getValue();
-            }
+            return protectedValue.getValue();
         } else {
             return null;
         }
@@ -58,7 +55,8 @@ public class OnPremAgentConfigService implements AgentConfigService {
     }
 
     /**
-     * Returns proxy to use for GAIA connection. Only relevant for on-prem deployment.
+     * Returns proxy to use for GAIA connection. Only relevant for on-prem deployment. Proxy password if set will be
+     * returned as decrypted.
      */
     public Proxy getProxy() {
         return agentConfig.getProxy();
@@ -100,6 +98,24 @@ public class OnPremAgentConfigService implements AgentConfigService {
         }
         if (agentConfig.getWorkerPool() != null &&  agentConfig.getWorkerPool() <= 0) {
             throw new IllegalStateException("workerPool must be at least 1");
+        }
+    }
+
+    private void decryptValues(final AgentConfig agentConfig) {
+        decryptProxyPassword(agentConfig.getProxy());
+        ProtectedValue protectedValue = agentConfig.getAccessToken();
+        if (protectedValue != null && protectedValue.getType() == Type.ENCRYPTED) {
+            final String accessKey = protectedValueDecrypter.decrypt(protectedValue);
+            agentConfig.setAccessToken(new ProtectedValue(Type.PLAIN, accessKey));
+        }
+    }
+
+    private void decryptProxyPassword(Proxy proxy) {
+        if (proxy != null) {
+            if (proxy.getHttpProxyPassword() != null && proxy.getHttpProxyPassword().getType() == Type.ENCRYPTED) {
+                String newProxyPassword = protectedValueDecrypter.decrypt(proxy.getHttpProxyPassword());
+                proxy.setHttpProxyPassword(new ProtectedValue(Type.PLAIN, newProxyPassword));
+            }
         }
     }
 

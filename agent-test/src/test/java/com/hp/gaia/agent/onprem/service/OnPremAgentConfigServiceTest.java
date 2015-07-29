@@ -63,8 +63,8 @@ public class OnPremAgentConfigServiceTest extends AgentIntegrationTest {
         assertNotNull(proxy);
         assertEquals("http://proxy.bbn.hp.com:8082", proxy.getHttpProxy());
         assertEquals("user3", proxy.getHttpProxyUser());
-        assertEquals("rCj8wi54deMstZIzLTA8/g==", proxy.getHttpProxyPassword().getValue());
-        assertEquals(Type.ENCRYPTED, proxy.getHttpProxyPassword().getType());
+        assertEquals("secretPassword3", proxy.getHttpProxyPassword().getValue());
+        assertEquals(Type.PLAIN, proxy.getHttpProxyPassword().getType());
     }
 
     @Test
@@ -80,8 +80,8 @@ public class OnPremAgentConfigServiceTest extends AgentIntegrationTest {
         assertNotNull(proxy);
         assertEquals("http://proxy.bbn.hp.com:8083", proxy.getHttpProxy());
         assertEquals("user3", proxy.getHttpProxyUser());
-        assertEquals("rCj8wi54deMstZIzLTA8/g==", proxy.getHttpProxyPassword().getValue());
-        assertEquals(Type.ENCRYPTED, proxy.getHttpProxyPassword().getType());
+        assertEquals("proxyPassword", proxy.getHttpProxyPassword().getValue());
+        assertEquals(Type.PLAIN, proxy.getHttpProxyPassword().getType());
     }
 
     private static File getConfigFile(String name) throws URISyntaxException {

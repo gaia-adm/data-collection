@@ -75,8 +75,8 @@ public class OnPremProvidersConfigServiceTest extends AgentIntegrationTest {
         assertNotNull(proxy);
         assertEquals("http://proxy.bbn.hp.com:8082", proxy.getHttpProxy());
         assertEquals("user2", proxy.getHttpProxyUser());
-        assertEquals("rCj8wi54deO1yGK0qw/3zA==", proxy.getHttpProxyPassword().getValue());
-        assertEquals(Type.ENCRYPTED, proxy.getHttpProxyPassword().getType());
+        assertEquals("secretPassword", proxy.getHttpProxyPassword().getValue());
+        assertEquals(Type.PLAIN, proxy.getHttpProxyPassword().getType());
 
         assertFalse(onPremProvidersConfigService.isProviderConfig("invalidId"));
         assertTrue(onPremProvidersConfigService.isProviderConfig("testConfig1"));
@@ -118,8 +118,8 @@ public class OnPremProvidersConfigServiceTest extends AgentIntegrationTest {
         assertNotNull(proxy2);
         assertEquals("http://proxy.bbn.hp.com:8083", proxy2.getHttpProxy());
         assertEquals("user3", proxy2.getHttpProxyUser());
-        assertEquals("rCj8wi54deMstZIzLTA8/g==", proxy2.getHttpProxyPassword().getValue());
-        assertEquals(Type.ENCRYPTED, proxy2.getHttpProxyPassword().getType());
+        assertEquals("secretPassword1", proxy2.getHttpProxyPassword().getValue());
+        assertEquals(Type.PLAIN, proxy2.getHttpProxyPassword().getType());
 
         assertFalse(onPremProvidersConfigService.isProviderConfig("invalidId"));
         assertTrue(onPremProvidersConfigService.isProviderConfig("testConfig1"));

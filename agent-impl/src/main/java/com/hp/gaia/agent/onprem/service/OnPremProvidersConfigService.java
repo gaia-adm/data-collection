@@ -45,6 +45,7 @@ public class OnPremProvidersConfigService implements ProvidersConfigService {
                 ConfigUtils.writeConfig(newConfigFile, providersConfig);
             }
         }
+        decryptValues(providersConfig);
         // store provider configs in local map
         if (providers != null) {
             for (final ProviderConfig providerConfig : providers) {
@@ -118,6 +119,25 @@ public class OnPremProvidersConfigService implements ProvidersConfigService {
         if (providerConfig.getProxy() != null && !StringUtils.isEmpty(providerConfig.getProxy().getHttpProxy())) {
             // validate proxy URL
             providerConfig.getProxy().getHttpProxyURL();
+        }
+    }
+
+    private void decryptValues(final ProvidersConfig providersConfig) {
+        decryptProxyPassword(providersConfig.getProxy());
+        final List<ProviderConfig> providerConfigs = providersConfig.getProviders();
+        if (providerConfigs != null) {
+            for (ProviderConfig providerConfig : providerConfigs) {
+                decryptProxyPassword(providerConfig.getProxy());
+            }
+        }
+    }
+
+    private void decryptProxyPassword(Proxy proxy) {
+        if (proxy != null) {
+            if (proxy.getHttpProxyPassword() != null && proxy.getHttpProxyPassword().getType() == Type.ENCRYPTED) {
+                String newProxyPassword = protectedValueDecrypter.decrypt(proxy.getHttpProxyPassword());
+                proxy.setHttpProxyPassword(new ProtectedValue(Type.PLAIN, newProxyPassword));
+            }
         }
     }
 

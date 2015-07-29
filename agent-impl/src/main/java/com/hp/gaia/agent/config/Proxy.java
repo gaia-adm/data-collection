@@ -21,6 +21,15 @@ public class Proxy {
     @JsonSerialize(converter = ProtectedValueOutConverter.class)
     private ProtectedValue httpProxyPassword;
 
+    public Proxy() {
+    }
+
+    public Proxy(final String httpProxy, final String httpProxyUser, final ProtectedValue httpProxyPassword) {
+        this.httpProxy = httpProxy;
+        this.httpProxyUser = httpProxyUser;
+        this.httpProxyPassword = httpProxyPassword;
+    }
+
     public String getHttpProxy() {
         return httpProxy;
     }
