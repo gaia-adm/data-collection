@@ -1,0 +1,16 @@
+{
+  "providers": [
+    {
+      "configId": "weather.Prague", // slash is not allowed
+      "providerId": "sample/openweathermap/weather",
+      "properties": {
+        "city": "Prague",
+        "country": "CZ"
+      },
+      "runPeriod": 60
+    }
+  ],
+  "proxy": {
+    "httpProxy": "http://proxy.bbn.hp.com:8080"
+  }
+}

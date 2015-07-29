@@ -1,0 +1,7 @@
+{
+  "gaiaLocation": "http://result-upload-service:8080",
+  "accessToken": {"plain": "991c94a9-0f20-4f63-9593-cb2af9760937"}, // use your accessToken
+  "workerPool": 5,
+  "soTimeout": 60000,
+  "connectTimeout": 30000
+}
