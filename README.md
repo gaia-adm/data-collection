@@ -1,3 +1,5 @@
+CircleCI build status: [![Circle CI](https://circleci.com/gh/gaia-adm/data-collection.svg?style=svg)](https://circleci.com/gh/gaia-adm/data-collection)
+
 # GAIA on-premise agent
 
 GAIA on-premise agent is a component that performs collection of data
