@@ -1,0 +1,16 @@
+machine:
+  services:
+    - docker
+dependencies:
+  override:
+    - docker build -t gaiaadm/data-collection-build-img:$BUILD_TAG -f Dockerfile.build .
+    - docker cp data-collection-build-img:/src/distributions/on-premise-agent/target/gaia-on-premise-agent.zip ./target
+test:
+  override:
+    - /bin/true
+general:
+  branches:
+    only:
+      - master
+  artifacts:
+    - target/gaia-on-premise-agent.zip
