@@ -1,0 +1,14 @@
+{
+  "providers": [
+    {
+      "configId": "testConfig1",
+      "providerId": "testProviderId1",
+      "runPeriod": 40
+    },
+    {
+      "configId": "testConfig2",
+      "providerId": "testProviderId2",
+      "runPeriod": 50
+    }
+  ]
+}

@@ -41,6 +41,16 @@ public class DataCollectionTask implements Runnable {
     @Autowired
     private ResultUploadService resultUploadService;
 
+    // for tests
+    public void setResultUploadService(final ResultUploadService resultUploadService) {
+        this.resultUploadService = resultUploadService;
+    }
+
+    // for tests
+    public ProviderConfig getProviderConfig() {
+        return providerConfig;
+    }
+
     public void init(ProviderConfig providerConfig, CollectionState collectionState) {
         this.providerConfig = providerConfig;
         this.collectionState = collectionState;

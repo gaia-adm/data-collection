@@ -1,12 +1,14 @@
 package com.hp.gaia.agent.onprem;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Paths;
+import java.util.Map;
 
 /**
  * Main class for on-premise agent startup.
@@ -15,7 +17,7 @@ public class AgentStartup {
 
     public static void main(String[] args) {
         try {
-            init();
+            init(System.getenv());
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(2);
@@ -31,8 +33,9 @@ public class AgentStartup {
         }
     }
 
-    private static void init() throws MalformedURLException {
-        GlobalSettings.setWorkingDir(getWorkingDir());
+    // for tests
+    static ConfigurableApplicationContext init(final Map<String, String> env) throws MalformedURLException {
+        GlobalSettings.setWorkingDir(getWorkingDir(env));
         // setup logging configuration
         File logFile = GlobalSettings.getConfigFile("log4j2.xml");
         URL logFileUrl = Paths.get(logFile.toURI()).toUri().toURL();
@@ -41,10 +44,11 @@ public class AgentStartup {
         ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[] {"classpath*:/Spring/gaia-*-context.xml"}, false);
         context.refresh();
         context.registerShutdownHook();
+        return context;
     }
 
-    private static String getWorkingDir() {
-        String gaiaAgentHome = System.getenv("GAIA_AGENT_HOME");
+    private static String getWorkingDir(final Map<String, String> env) {
+        String gaiaAgentHome = env.get("GAIA_AGENT_HOME");
         if (StringUtils.isEmpty(gaiaAgentHome)) {
             return new File("").getAbsolutePath();
         } else {

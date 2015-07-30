@@ -14,6 +14,7 @@ public class MyData implements Data {
     private String charset;
     private byte[] content;
     private String bookmark;
+    private boolean closed;
 
     public MyData(final Map<String, String> metadata, final String mimeType, final String charset,
                   final byte[] content,
@@ -52,6 +53,10 @@ public class MyData implements Data {
 
     @Override
     public void close() throws IOException {
+        closed = true;
+    }
 
+    public boolean isClosed() {
+        return closed;
     }
 }

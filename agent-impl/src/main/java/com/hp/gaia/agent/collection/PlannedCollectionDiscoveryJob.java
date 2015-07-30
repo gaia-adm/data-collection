@@ -31,6 +31,11 @@ public class PlannedCollectionDiscoveryJob {
     @Autowired
     private ObjectFactory<DataCollectionTask> dataCollectionTaskFactory;
 
+    // for tests
+    public void setTaskExecutor(final TaskExecutor taskExecutor) {
+        this.taskExecutor = taskExecutor;
+    }
+
     public void execute() {
         PlannedCollection plannedCollection = plannedCollectionProvider.findNextPlannedCollection();
 

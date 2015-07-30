@@ -1,0 +1,16 @@
+[
+  {
+    "credentialsId": "testCredentialsId",
+    "values": {
+      "password": {
+        "encrypted": "hqvbb6rYPdYR/DjNBWvyBA=="
+      },
+      "secretKey": {
+        "encrypt": "testSecretKey"
+      },
+      "username": {
+        "plain": "testUsername"
+      }
+    }
+  }
+]
