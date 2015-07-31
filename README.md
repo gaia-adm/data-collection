@@ -26,7 +26,7 @@ from on-premise systems and sends it to GAIA analytics on cloud.
 ## Agent
 
 Sample agent.json configuration file:
-
+```js
 {
   /* Location of GAIA result upload service */
   "gaiaLocation": "http://result-upload-service:9006",
@@ -39,6 +39,7 @@ Sample agent.json configuration file:
   /* Connect timeout in milliseconds when establishing connection to GAIA */
   "connectTimeout": 30000
 }
+```
 
 "gaiaLocation" and "accessToken" are required. If "accessToken" is defined as "encrypt", new agent.json.encrypted file
 will be created during runtime where the value will be encrypted. This new file can then be used to replace the original file.
@@ -47,7 +48,7 @@ Defining "accessToken" with "plain" means the value is not to be encrypted.
 ## Credentials store
 
 Sample credentials.json configuration file:
-
+```js
 [
   // Sample credential definition. Value of "credentialsId" must match value used in providers.json. Credential values are provider specific.
   {
@@ -62,6 +63,7 @@ Sample credentials.json configuration file:
     }
   }
 ]
+```
 
 credentials.json is used as a credential store for providers. Value of "credentialsId" must match value in providers.json.
 Values of credentials - "username", "password" etc. are implementation specific and each may be encrypted.
@@ -72,6 +74,7 @@ that may be used to replace the original file.
 
 Sample providers.json configuration file:
 
+```js
 {
   "providers": [
     {
@@ -105,6 +108,7 @@ Sample providers.json configuration file:
     "httpProxyPassword": {"encrypt": "pass"}
   }
 }
+```
 
 provider.json is used to configure bundled data providers for data collection. Each configuration must have a unique
 "configId" which may be a number or string - identifying what is being collected. "providerId" must reference an existing
