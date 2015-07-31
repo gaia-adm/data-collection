@@ -9,15 +9,21 @@ import java.util.Map;
 /**
  * Represents block of data containing measures/metrics. The input stream may contain one (file) or more items (issues,
  * tests - typically one page). A result processor must be registered at GAIA result-processing-service for processing
- * this
+ * this data.
  */
 public interface Data extends Closeable {
 
     /**
-     * Returns metadata of content. See {@link MetadataConstants} for possible keys. Metadata will be available to result
-     * processor.
+     * Returns custom metadata that will be available to processor with prefix 'c_'.
      */
-    Map<String, String> getMetadata();
+    Map<String, String> getCustomMetadata();
+
+    /**
+     * Identifies type of data in {@link Data#getInputStream()}. Typically it will be a string including provider type and
+     * data type - i.e 'ALM/tests'. A result processor will be selected based on the data type.
+     */
+    @NotNull
+    String getDataType();
 
     /**
      * MIME type value (i.e application/xml, text/plain).

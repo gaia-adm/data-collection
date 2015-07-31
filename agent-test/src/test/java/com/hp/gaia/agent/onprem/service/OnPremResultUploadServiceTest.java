@@ -3,7 +3,6 @@ package com.hp.gaia.agent.onprem.service;
 import com.hp.gaia.agent.MyData;
 import com.hp.gaia.agent.MyHttpRequestHandler;
 import com.hp.gaia.agent.config.ProviderConfig;
-import com.hp.gaia.provider.MetadataConstants;
 import org.apache.http.impl.bootstrap.HttpServer;
 import org.apache.http.impl.bootstrap.ServerBootstrap;
 import org.easymock.EasyMockSupport;
@@ -13,6 +12,7 @@ import org.junit.Test;
 import org.springframework.util.SocketUtils;
 import static org.easymock.EasyMock.expect;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -72,15 +72,19 @@ public class OnPremResultUploadServiceTest extends EasyMockSupport {
         final String expectedUriPath = "/result-upload/rest/v1/upload-file";
         ProviderConfig providerConfig = new ProviderConfig("testConfigId", "testProviderId", null, null, null, 60);
         Map<String, String> metadata = new HashMap<>();
-        metadata.put(MetadataConstants.METRIC, "testMetric");
-        metadata.put(MetadataConstants.CATEGORY, "testCategory");
+        metadata.put("key1", "value1");
         String content = "{\"testKey\": \"testValue\"}";
-        MyData myData = new MyData(metadata, "application/json", "UTF-8", content.getBytes(Charset.forName("UTF-8")), "bookmark");
+        MyData myData = new MyData(metadata, "testMetric/testCategory",
+                "application/json", "UTF-8", content.getBytes(Charset.forName("UTF-8")), "bookmark");
         myHttpRequestHandler.setExpectedUriPath(expectedUriPath);
         onPremResultUploadService.sendData(providerConfig, myData);
         // verify HTTP request
         assertEquals(expectedUriPath, myHttpRequestHandler.getLastRequestUriPath());
-        assertEquals(metadata, myHttpRequestHandler.getLastParams());
+        final Map<String, String> lastParams = myHttpRequestHandler.getLastParams();
+        assertNotNull(lastParams);
+        assertEquals(2, lastParams.size());
+        assertEquals("value1", lastParams.get("c_key1"));
+        assertEquals("testMetric/testCategory", lastParams.get("dataType"));
         Map<String, String> httpHeaders = myHttpRequestHandler.getLastHeaders();
         assertEquals("application/json; charset=UTF-8", httpHeaders.get("Content-Type"));
         assertEquals("Bearer myAccessToken", httpHeaders.get("Authorization"));
@@ -104,10 +108,10 @@ public class OnPremResultUploadServiceTest extends EasyMockSupport {
         onPremResultUploadService.init(5);
         ProviderConfig providerConfig = new ProviderConfig("testConfigId", "testProviderId", null, null, null, 60);
         Map<String, String> metadata = new HashMap<>();
-        metadata.put(MetadataConstants.METRIC, "testMetric");
-        metadata.put(MetadataConstants.CATEGORY, "testCategory");
+        metadata.put("key1", "value1");
         String content = "{\"testKey\": \"testValue\"}";
-        MyData myData = new MyData(metadata, "application/json", "UTF-8", content.getBytes(Charset.forName("UTF-8")), "bookmark");
+        MyData myData = new MyData(metadata, "testMetric/testCategory",
+                "application/json", "UTF-8", content.getBytes(Charset.forName("UTF-8")), "bookmark");
         myHttpRequestHandler.setExpectedUriPath(null);
         try {
             onPremResultUploadService.sendData(providerConfig, myData);

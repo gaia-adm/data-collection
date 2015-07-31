@@ -158,15 +158,17 @@ public class WeatherDataProvider implements DataProvider {
         }
 
         @Override
-        public Map<String, String> getMetadata() {
+        public Map<String, String> getCustomMetadata() {
             Map<String, String> metadata = new HashMap<>();
+            // note that in processor custom metadata is prefixed with c_
             metadata.put("city", city);
             metadata.put("country", country);
-            // TODO: consider replacing metric&category with one data type field containing slahes, i.e openweathermap/weather
-            // currently metric&category are needed for result upload service and result processing
-            metadata.put("metric", "openweathermap");
-            metadata.put("category", "weather");
             return metadata;
+        }
+
+        @Override
+        public String getDataType() {
+            return "openweathermap/weather";
         }
 
         @Override

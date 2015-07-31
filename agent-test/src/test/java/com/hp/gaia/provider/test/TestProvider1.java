@@ -7,7 +7,6 @@ import com.hp.gaia.provider.Data;
 import com.hp.gaia.provider.DataProvider;
 import com.hp.gaia.provider.DataStream;
 import com.hp.gaia.provider.InvalidConfigurationException;
-import com.hp.gaia.provider.MetadataConstants;
 import com.hp.gaia.provider.ProxyProvider;
 
 import java.io.IOException;
@@ -119,10 +118,9 @@ public class TestProvider1 implements DataProvider {
                     return null;
                 }
                 Map<String, String> metadata = new HashMap<>();
-                metadata.put(MetadataConstants.METRIC, "testMetric");
-                metadata.put(MetadataConstants.CATEGORY, "testCategory");
+                metadata.put("key1", "value1");
                 String content = "{\"testKey\": \"testValue\"}";
-                MyData myData = new MyData(metadata, "application/json", "UTF-8", content.getBytes(
+                MyData myData = new MyData(metadata, "testMetric/testCategory", "application/json", "UTF-8", content.getBytes(
                                         Charset.forName("UTF-8")), "bookmark2");
                 return myData;
             }

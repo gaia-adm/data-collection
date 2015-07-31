@@ -6,7 +6,6 @@ import com.hp.gaia.provider.Data;
 import com.hp.gaia.provider.DataProvider;
 import com.hp.gaia.provider.DataStream;
 import com.hp.gaia.provider.InvalidConfigurationException;
-import com.hp.gaia.provider.MetadataConstants;
 import com.hp.gaia.provider.ProxyProvider;
 
 import java.io.ByteArrayInputStream;
@@ -59,11 +58,15 @@ public class DummyDataProvider implements DataProvider {
     private static class DummyData implements Data {
 
         @Override
-        public Map<String, String> getMetadata() {
+        public Map<String, String> getCustomMetadata() {
             Map<String, String> metadata = new HashMap<>();
-            metadata.put(MetadataConstants.METRIC, "dummy");
-            metadata.put(MetadataConstants.CATEGORY, "dummy");
+            metadata.put("key1", "value1");
             return metadata;
+        }
+
+        @Override
+        public String getDataType() {
+            return "dummy/dummy";
         }
 
         @Override
