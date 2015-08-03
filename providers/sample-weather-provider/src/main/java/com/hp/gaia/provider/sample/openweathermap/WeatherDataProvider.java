@@ -10,10 +10,14 @@ import com.hp.gaia.provider.ProxyProvider;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpHost;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.config.AuthSchemes;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.entity.ContentType;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
@@ -21,6 +25,8 @@ import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import static java.util.Arrays.asList;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -122,18 +128,26 @@ public class WeatherDataProvider implements DataProvider {
             // create and configure HttpClient
             BasicHttpClientConnectionManager cm = new BasicHttpClientConnectionManager();
             RequestConfig.Builder requestConfigBuilder = RequestConfig.custom();
+            org.apache.http.client.CredentialsProvider credsProvider = new BasicCredentialsProvider();
             Proxy proxy = proxyProvider.getProxy();
             if (!Proxy.NO_PROXY.equals(proxy)) {
                 // proxy is required, configure it globally
                 final InetSocketAddress socketAddress = (InetSocketAddress) proxy.address();
                 HttpHost httpHost = new HttpHost(socketAddress.getHostName(), socketAddress.getPort());
                 requestConfigBuilder.setProxy(httpHost);
-                // TODO: also configure credentials
+                final String proxyUsername = proxyProvider.getProxyUsername();
+                final String proxyPassword = proxyProvider.getProxyPassword();
+                if (!StringUtils.isEmpty(proxyUsername) && !StringUtils.isEmpty(proxyPassword)) {
+                    credsProvider.setCredentials(new AuthScope(socketAddress.getHostName(), socketAddress.getPort()),
+                            new UsernamePasswordCredentials(proxyUsername, proxyPassword));
+                }
             }
+            requestConfigBuilder.setTargetPreferredAuthSchemes(asList(AuthSchemes.DIGEST)); // never use HTTP basic
             RequestConfig globalConfig = requestConfigBuilder.build();
             HttpClientBuilder httpClientBuilder = HttpClients.custom()
                     .setConnectionManager(cm)
-                    .setDefaultRequestConfig(globalConfig);
+                    .setDefaultRequestConfig(globalConfig)
+                    .setDefaultCredentialsProvider(credsProvider);
             return httpClientBuilder.build();
         }
 
