@@ -75,6 +75,11 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
         </dependency>
+        <!-- providers -->
+        <dependency>
+            <groupId>com.hp.gaia.data-collection</groupId>
+            <artifactId>jenkins-provider</artifactId>
+        </dependency>
         <!-- test dependencies -->
         <dependency>
             <groupId>junit</groupId>
