@@ -7,15 +7,19 @@ import com.hp.gaia.provider.DataStream;
 import com.hp.gaia.provider.InvalidConfigurationException;
 import com.hp.gaia.provider.ProxyProvider;
 import org.apache.commons.lang.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Map;
 
 /**
  * Jenkins provider of test data.
  */
 public class TestDataProvider implements DataProvider {
+
+    private static final Logger logger = LogManager.getLogger(TestDataProvider.class);
 
     @Override
     public String getProviderId() {
@@ -27,8 +31,8 @@ public class TestDataProvider implements DataProvider {
                                 final ProxyProvider proxyProvider, final String bookmark, final boolean inclusive)
             throws AccessDeniedException, InvalidConfigurationException {
         TestDataConfiguration testDataConfiguration = getTestDataConfiguration(properties);
-        // TODO: add bookmark & inclusive
-        return new TestDataStream(testDataConfiguration, credentialsProvider, proxyProvider);
+        logger.debug("About to fetch test data for " + testDataConfiguration.getJob());
+        return new TestDataStream(testDataConfiguration, credentialsProvider, proxyProvider, bookmark, inclusive);
     }
 
     private static TestDataConfiguration getTestDataConfiguration(final Map<String, String> properties) {
@@ -37,16 +41,16 @@ public class TestDataProvider implements DataProvider {
             throw new InvalidConfigurationException("location is missing");
         }
 
-        URL locationUrl;
+        URI locationUri;
         try {
-            locationUrl = new URL(location);
-        } catch (MalformedURLException e) {
-            throw new InvalidConfigurationException("Invalid location URL", e);
+            locationUri = new URI(location);
+        } catch (URISyntaxException e) {
+            throw new InvalidConfigurationException("Invalid location URI", e);
         }
         String job = properties.get("job");
         if (StringUtils.isEmpty(job)) {
             throw new InvalidConfigurationException("job is missing");
         }
-        return new TestDataConfiguration(locationUrl, job);
+        return new TestDataConfiguration(locationUri, job);
     }
 }

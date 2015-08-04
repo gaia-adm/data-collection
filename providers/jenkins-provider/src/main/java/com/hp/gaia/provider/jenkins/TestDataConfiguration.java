@@ -1,19 +1,19 @@
 package com.hp.gaia.provider.jenkins;
 
-import java.net.URL;
+import java.net.URI;
 
 public class TestDataConfiguration {
 
-    private final URL location;
+    private final URI location;
 
     private final String job;
 
-    public TestDataConfiguration(final URL location, final String job) {
+    public TestDataConfiguration(final URI location, final String job) {
         this.location = location;
         this.job = job;
     }
 
-    public URL getLocation() {
+    public URI getLocation() {
         return location;
     }
 
