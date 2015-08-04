@@ -25,7 +25,7 @@ public class ListBuildsState implements State {
 
     private static final Logger logger = LogManager.getLogger(ListBuildsState.class);
 
-    private JobInfo jobInfo;
+    private BuildInfo buildInfo;
 
     private boolean inclusiveParam;
 
@@ -34,8 +34,8 @@ public class ListBuildsState implements State {
     public ListBuildsState() {
     }
 
-    public ListBuildsState(final JobInfo rootJobInfo, final boolean inclusiveParam, final boolean skipParam) {
-        this.jobInfo = jobInfo;
+    public ListBuildsState(final BuildInfo rootBuildInfo, final boolean inclusiveParam, final boolean skipParam) {
+        this.buildInfo = rootBuildInfo;
         this.inclusiveParam = inclusiveParam;
         this.skipParam = skipParam;
     }
@@ -111,8 +111,8 @@ public class ListBuildsState implements State {
         int number = numberNode.asInt();
         TextNode urlNode = (TextNode) buildNode.get("url");
         String url = urlNode.asText();
-        if (jobInfo != null) {
-            int startBuildNumber = jobInfo.getBuildNumber();
+        if (buildInfo != null) {
+            int startBuildNumber = buildInfo.getBuildNumber();
             if (startBuildNumber > number) {
                 return true;
             } else if (startBuildNumber == number) {
@@ -133,8 +133,8 @@ public class ListBuildsState implements State {
     private static void addGetBuildState(StateContext stateContext, int number, String url, boolean inclusive) {
         TestDataConfiguration testDataConfiguration = stateContext.getTestDataConfiguration();
         String jobName = testDataConfiguration.getJob();
-        List<JobInfo> jobPath = new ArrayList<>();
-        jobPath.add(new JobInfo(jobName, number, url));
+        List<BuildInfo> jobPath = new ArrayList<>();
+        jobPath.add(new BuildInfo(jobName, number, url));
         GetBuildState getBuildState = new GetBuildState(jobPath, inclusive);
         stateContext.add(getBuildState);
     }

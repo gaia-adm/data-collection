@@ -62,10 +62,10 @@ public class StateMachine implements Closeable, StateContext {
             add(new ListBuildsState());
         } else {
             // bookmark from root or child job
-            final List<JobInfo> jobPath = testDataBookmark.getJobPath();
+            final List<BuildInfo> jobPath = testDataBookmark.getJobPath();
             if (!CollectionUtils.isEmpty(jobPath)) {
                 // add state for listing jobs of root job name
-                JobInfo rootJobInfo = jobPath.get(0);
+                BuildInfo rootBuildInfo = jobPath.get(0);
                 boolean inclusiveParam = false;
                 boolean skipParam = false;
                 if (jobPath.size() <= 1) {
@@ -75,7 +75,7 @@ public class StateMachine implements Closeable, StateContext {
                     // as it will be processed from bottom
                     skipParam = true;
                 }
-                ListBuildsState listBuildsState = new ListBuildsState(rootJobInfo, inclusiveParam, skipParam);
+                ListBuildsState listBuildsState = new ListBuildsState(rootBuildInfo, inclusiveParam, skipParam);
                 add(listBuildsState);
                 if (jobPath.size() > 1) {
                     GetBuildSiblingsState getBuildSiblingsState = new GetBuildSiblingsState(jobPath);

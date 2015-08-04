@@ -6,9 +6,9 @@ import java.util.List;
 
 public class GetBuildSiblingsState implements State {
 
-    private List<JobInfo> jobPath;
+    private List<BuildInfo> jobPath;
 
-    public GetBuildSiblingsState(final List<JobInfo> jobPath) {
+    public GetBuildSiblingsState(final List<BuildInfo> jobPath) {
         this.jobPath = jobPath;
     }
 

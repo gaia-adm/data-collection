@@ -2,7 +2,7 @@ package com.hp.gaia.provider.jenkins;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class JobInfo {
+public class BuildInfo {
 
     @JsonProperty("job")
     private String job;
@@ -10,13 +10,13 @@ public class JobInfo {
     @JsonProperty("buildNumber")
     private int buildNumber;
 
-    @JsonProperty("url")
-    private String url;
+    @JsonProperty("uri")
+    private String uri;
 
-    public JobInfo(final String job, final int buildNumber, final String url) {
+    public BuildInfo(final String job, final int buildNumber, final String uri) {
         this.job = job;
         this.buildNumber = buildNumber;
-        this.url = url;
+        this.uri = uri;
     }
 
     public String getJob() {
@@ -35,12 +35,12 @@ public class JobInfo {
         this.buildNumber = buildNumber;
     }
 
-    public String getUrl() {
-        return url;
+    public String getUri() {
+        return uri;
     }
 
-    public void setUrl(final String url) {
-        this.url = url;
+    public void setUri(final String uri) {
+        this.uri = uri;
     }
 
     @Override
@@ -48,7 +48,7 @@ public class JobInfo {
         final StringBuilder sb = new StringBuilder("JobInfo{");
         sb.append("job='").append(job).append('\'');
         sb.append(", buildNumber=").append(buildNumber);
-        sb.append(", url='").append(url).append('\'');
+        sb.append(", uri='").append(uri).append('\'');
         sb.append('}');
         return sb.toString();
     }

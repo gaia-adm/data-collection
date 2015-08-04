@@ -7,13 +7,13 @@ import java.util.List;
 public class TestDataBookmark {
 
     @JsonProperty("jobPath")
-    private List<JobInfo> jobPath;
+    private List<BuildInfo> jobPath;
 
-    public List<JobInfo> getJobPath() {
+    public List<BuildInfo> getJobPath() {
         return jobPath;
     }
 
-    public void setJobPath(final List<JobInfo> jobPath) {
+    public void setJobPath(final List<BuildInfo> jobPath) {
         this.jobPath = jobPath;
     }
 
