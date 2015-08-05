@@ -8,9 +8,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.hp.gaia.provider.Data;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.util.CollectionUtils;
@@ -22,16 +24,17 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class GetBuildState implements State {
     private static final Logger logger = LogManager.getLogger(GetBuildState.class);
 
-    private List<BuildInfo> jobPath;
+    private final List<BuildInfo> buildPath;
 
-    private boolean inclusive;
+    private final boolean inclusive;
 
-    public GetBuildState(final List<BuildInfo> jobPath, final boolean inclusive) {
-        this.jobPath = jobPath;
+    public GetBuildState(final List<BuildInfo> buildPath, final boolean inclusive) {
+        this.buildPath = buildPath;
         this.inclusive = inclusive;
     }
 
@@ -40,9 +43,89 @@ public class GetBuildState implements State {
         BuildDetails buildDetails = getBuildDetails(stateContext);
         if (buildDetails != null) {
             prepareNextStates(stateContext, buildDetails);
-            // TODO: fetch test data for this build
+            if (inclusive) {
+                return getTestData(stateContext, buildDetails);
+            }
         }
         return null;
+    }
+
+    private Data getTestData(final StateContext stateContext, final BuildDetails buildDetails) {
+        CloseableHttpClient httpClient = stateContext.getHttpClient();
+        URI locationUri = stateContext.getTestDataConfiguration().getLocation();
+
+        BuildInfo buildInfo = buildPath.get(buildPath.size() - 1);
+        // http://mydtbld0049.isr.hp.com:8080/jenkins/job/AgM-job-Test-Sanity/DRIVER=chrome,FLOW_TYPE=FULL,SCM_BRANCH=master/1633/testReport/api/json?pretty=true
+        final String buildUri = BuildUriUtils.createBuildUri(locationUri, buildInfo.getUriPath());
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(buildUri)
+                .path("/testReport/api/json");
+        final String requestUri = uriBuilder.build().encode().toString();
+        HttpGet httpGet = new HttpGet(requestUri);
+        httpGet.setHeader("Accept", "application/json");
+        logger.debug("Fetching tests from " + requestUri);
+
+        CloseableHttpResponse response = null;
+        try {
+            response = httpClient.execute(httpGet);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to fetch test data", e);
+        }
+        // check response code
+        boolean skipClose = false;
+        try {
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode == 404) {
+                consumeResponse(requestUri, response);
+                logger.debug("No tests found for " + buildInfo.getJob() + "/" + buildInfo.getBuildNumber());
+                return null;
+            }
+            if (!(statusCode >= 200 && statusCode < 300)) {
+                consumeResponse(requestUri, response);
+                throw new RuntimeException("Failed to fetch tests, status code " + statusCode + " " +
+                        response.getStatusLine().getReasonPhrase());
+            } else {
+                // 2xx ok, construct Data
+                Data data = createData(stateContext, response, buildDetails);
+                skipClose = true;
+                return data;
+            }
+        } finally {
+            // else will be closed by Data class
+            if (!skipClose) {
+                IOUtils.closeQuietly(response);
+            }
+        }
+    }
+
+    private Data createData(final StateContext stateContext, final CloseableHttpResponse response,
+                            final BuildDetails buildDetails) {
+        Map<String, String> customMetadata = new HashMap<>();
+        BuildInfo buildInfo = buildPath.get(buildPath.size() - 1);
+        customMetadata.put("LOCATION_URI", stateContext.getTestDataConfiguration().getLocation().toString());
+        customMetadata.put("JOB_NAME", buildInfo.getJob());
+        customMetadata.put("BUILD_URI_PATH", buildInfo.getUriPath());
+        customMetadata.put("BUILD_NUMBER", String.valueOf(buildDetails.getNumber()));
+        customMetadata.put("BUILD_RESULT", String.valueOf(buildDetails.getResult()));
+        customMetadata.put("BUILD_TIMESTAMP", String.valueOf(buildDetails.getTimestamp()));
+        final BuildInfo rootBuild = buildPath.get(0);
+        customMetadata.put("ROOT_JOB_NAME", rootBuild.getJob());
+        customMetadata.put("ROOT_BUILD_NUMBER", String.valueOf(rootBuild.getBuildNumber()));
+        TestDataConfiguration testDataConfiguration = stateContext.getTestDataConfiguration();
+        // also add custom tags
+        List<String> customTags = testDataConfiguration.getCustomTags();
+        if (customTags != null) {
+            Map<String, String> parameters = buildDetails.getParameters();
+            for (String customTag : customTags) {
+                if (parameters.containsKey(customTag)) {
+                    customMetadata.put(customTag, parameters.get(customTag));
+                }
+            }
+        }
+
+        TestDataBookmark testDataBookmark = new TestDataBookmark(buildPath);
+        String bookmark = JsonSerializer.serialize(testDataBookmark);
+
+        return new DataImpl(customMetadata, "jenkins/test", response, bookmark);
     }
 
     private void prepareNextStates(final StateContext stateContext, final BuildDetails buildDetails) {
@@ -50,30 +133,30 @@ public class GetBuildState implements State {
         List<BuildInfo> buildInfos = buildDetails.getSubBuilds();
         if (!CollectionUtils.isEmpty(buildInfos)) {
             for (BuildInfo buildInfo : buildInfos) {
-                List<BuildInfo> newJobPath = new ArrayList<>(jobPath);
-                newJobPath.add(buildInfo);
-                stateContext.add(new GetBuildState(newJobPath, true));
+                List<BuildInfo> newBuildPath = new ArrayList<>(buildPath);
+                newBuildPath.add(buildInfo);
+                stateContext.add(new GetBuildState(newBuildPath, true));
             }
         }
         // matrix build ref
         if (buildDetails.getMatrixBuildRef() != null) {
             BuildInfo matrixBuildRef = buildDetails.getMatrixBuildRef();
-            List<BuildInfo> newJobPath = new ArrayList<>(jobPath);
-            newJobPath.add(matrixBuildRef);
-            stateContext.add(new GetBuildState(newJobPath, true));
+            List<BuildInfo> newBuildPath = new ArrayList<>(buildPath);
+            newBuildPath.add(matrixBuildRef);
+            stateContext.add(new GetBuildState(newBuildPath, true));
         }
     }
 
     private BuildDetails getBuildDetails(final StateContext stateContext) {
-        TestDataConfiguration testDataConfiguration = stateContext.getTestDataConfiguration();
         CloseableHttpClient httpClient = stateContext.getHttpClient();
+        URI locationUri = stateContext.getTestDataConfiguration().getLocation();
 
-        BuildInfo buildInfo = jobPath.get(jobPath.size() - 1);
+        BuildInfo buildInfo = buildPath.get(buildPath.size() - 1);
         // http://mydtbld0049.isr.hp.com:8080/jenkins/job/AgM-SaaS-Full-Root-master/4013/api/json?pretty=true&tree=actions[parameters[name,value]],number,building,result,timestamp,url,runs[number,url],subBuilds[buildNumber,jobName,url]
-        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(buildInfo.getUri())
+        final String buildUri = BuildUriUtils.createBuildUri(locationUri, buildInfo.getUriPath());
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(buildUri)
                 .path("/api/json")
-                .queryParam("tree",
-                        "actions[parameters[name,value]],number,building,result,timestamp,runs[number,url],subBuilds[buildNumber,jobName,url]");
+                .queryParam("tree", "actions[parameters[name,value]],number,building,result,timestamp,url,runs[number,url],subBuilds[buildNumber,jobName,url]");
         final String requestUri = uriBuilder.build().encode().toString();
         HttpGet httpGet = new HttpGet(requestUri);
         httpGet.setHeader("Accept", "application/json");
@@ -89,10 +172,12 @@ public class GetBuildState implements State {
         try {
             int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode == 404) {
+                consumeResponse(requestUri, response);
                 logger.debug("Build " + buildInfo.getJob() + "/" + buildInfo.getBuildNumber() + " not found");
                 return null;
             }
             if (!(statusCode >= 200 && statusCode < 300)) {
+                consumeResponse(requestUri, response);
                 throw new RuntimeException("Failed to fetch build, status code " + statusCode + " " +
                         response.getStatusLine().getReasonPhrase());
             }
@@ -123,6 +208,8 @@ public class GetBuildState implements State {
             buildDetails.setResult(resultNode.asText());
             NumericNode timestampNode = (NumericNode) rootNode.get("timestamp");
             buildDetails.setTimestamp(timestampNode.asLong());
+            TextNode urlNode = (TextNode) rootNode.get("url");
+            buildDetails.setUrl(urlNode.asText());
             // get matrixBuildRef
             if (rootNode.has("runs")) {
                 ArrayNode matrixBuildRefs = (ArrayNode) rootNode.get("runs");
@@ -135,7 +222,8 @@ public class GetBuildState implements State {
                         String refUrl = refUrlNode.asText();
                         if (buildDetails.getNumber() == refNumber) {
                             // we found the correct matrix build ref
-                            buildDetails.setMatrixBuildRef(new BuildInfo(buildInfo.getJob(), refNumber, refUrl));
+                            String buildUriPath = BuildUriUtils.getBuildUriPath(testDataConfiguration.getLocation(), refUrl);
+                            buildDetails.setMatrixBuildRef(new BuildInfo(buildInfo.getJob(), refNumber, buildUriPath));
                         }
                     }
                 }
@@ -153,9 +241,8 @@ public class GetBuildState implements State {
                         String jobName = jobNameNode.asText();
                         TextNode refUrlNode = (TextNode) buildRefNode.get("url");
                         String refUrl = refUrlNode.asText();
-                        // url is relative, make it absolute
-                        String buildUri = createBuildUri(testDataConfiguration, refUrl);
-                        buildDetails.getSubBuilds().add(new BuildInfo(jobName, refNumber, buildUri));
+                        refUrl = StringUtils.removeStart(refUrl, "/");
+                        buildDetails.getSubBuilds().add(new BuildInfo(jobName, refNumber, refUrl));
                     }
                 }
             }
@@ -178,7 +265,7 @@ public class GetBuildState implements State {
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
             IOUtils.closeQuietly(is);
@@ -187,10 +274,12 @@ public class GetBuildState implements State {
         return buildDetails;
     }
 
-    private String createBuildUri(TestDataConfiguration testDataConfiguration, String relativePath) {
-        URI locationUri = testDataConfiguration.getLocation();
-        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUri(locationUri)
-                .path("/" + relativePath);
-        return uriBuilder.build().toString();
+    private static void consumeResponse(final String requestUri, final CloseableHttpResponse response) {
+        try {
+            EntityUtils.consume(response.getEntity());
+        } catch (IOException e) {
+            // not fatal, just log
+            logger.error("Failed to receive full response for " + requestUri, e);
+        }
     }
 }

@@ -6,21 +6,28 @@ import java.util.List;
 
 public class TestDataBookmark {
 
-    @JsonProperty("jobPath")
-    private List<BuildInfo> jobPath;
+    @JsonProperty("buildPath")
+    private List<BuildInfo> buildPath;
 
-    public List<BuildInfo> getJobPath() {
-        return jobPath;
+    public TestDataBookmark() {
     }
 
-    public void setJobPath(final List<BuildInfo> jobPath) {
-        this.jobPath = jobPath;
+    public TestDataBookmark(final List<BuildInfo> jobPath) {
+        this.buildPath = jobPath;
+    }
+
+    public List<BuildInfo> getBuildPath() {
+        return buildPath;
+    }
+
+    public void setBuildPath(final List<BuildInfo> buildPath) {
+        this.buildPath = buildPath;
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("TestDataBookmark{");
-        sb.append("jobPath=").append(jobPath);
+        sb.append("buildPath=").append(buildPath);
         sb.append('}');
         return sb.toString();
     }

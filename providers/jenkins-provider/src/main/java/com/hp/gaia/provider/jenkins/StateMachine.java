@@ -16,6 +16,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.util.CollectionUtils;
 
 import static java.util.Arrays.asList;
@@ -33,6 +35,8 @@ import java.util.Map;
  * Implementation of state machine to handle fetching of test data from hierarchical Jenkins builds and matrix builds.
  */
 public class StateMachine implements Closeable, StateContext {
+
+    private static final Logger logger = LogManager.getLogger(StateMachine.class);
 
     private final TestDataConfiguration testDataConfiguration;
 
@@ -57,32 +61,27 @@ public class StateMachine implements Closeable, StateContext {
     public void init(final String bookmark, final boolean inclusive) {
         httpclient = createHttpClient();
         TestDataBookmark testDataBookmark = JsonSerializer.deserialize(bookmark, TestDataBookmark.class);
-        if (testDataBookmark == null) {
+        if (testDataBookmark == null || CollectionUtils.isEmpty(testDataBookmark.getBuildPath())) {
             // start from beginning, list all jobs
             add(new ListBuildsState());
         } else {
             // bookmark from root or child job
-            final List<BuildInfo> jobPath = testDataBookmark.getJobPath();
-            if (!CollectionUtils.isEmpty(jobPath)) {
-                // add state for listing jobs of root job name
-                BuildInfo rootBuildInfo = jobPath.get(0);
-                boolean inclusiveParam = false;
-                boolean skipParam = false;
-                if (jobPath.size() <= 1) {
-                    inclusiveParam = inclusive;
-                } else {
-                    // more than 1 items in job path, inclusive applies to the last one, skip the rootJobInfo from top
-                    // as it will be processed from bottom
-                    skipParam = true;
-                }
-                ListBuildsState listBuildsState = new ListBuildsState(rootBuildInfo, inclusiveParam, skipParam);
-                add(listBuildsState);
-                if (jobPath.size() > 1) {
-                    GetBuildSiblingsState getBuildSiblingsState = new GetBuildSiblingsState(jobPath);
-                    add(getBuildSiblingsState);
-                    GetBuildState getBuildState = new GetBuildState(jobPath, inclusive);
-                    add(getBuildState);
-                }
+            final List<BuildInfo> jobPath = testDataBookmark.getBuildPath();
+            // add state for listing jobs of root job name
+            BuildInfo rootBuildInfo = jobPath.get(0);
+            boolean inclusiveParam = false;
+            boolean skipParam = false;
+            if (jobPath.size() <= 1) {
+                inclusiveParam = inclusive;
+            } else {
+                // more than 1 items in job path, inclusive applies to the last one, skip the rootJobInfo from top
+                // as it will be processed from bottom
+                skipParam = true;
+            }
+            add(new ListBuildsState(rootBuildInfo, inclusiveParam, skipParam));
+            if (jobPath.size() > 1) {
+                add(new GetBuildSiblingsState(jobPath));
+                add(new GetBuildState(jobPath, inclusive));
             }
         }
     }
@@ -96,6 +95,9 @@ public class StateMachine implements Closeable, StateContext {
             if (data != null) {
                 break;
             }
+        }
+        if (stack.isEmpty() && data == null) {
+            logger.debug("No more data to fetch");
         }
         return data;
     }

@@ -15,6 +15,8 @@ public class BuildDetails {
 
     private long timestamp;
 
+    private String url;
+
     private BuildInfo matrixBuildRef;
 
     private List<BuildInfo> subBuilds;
@@ -57,6 +59,14 @@ public class BuildDetails {
 
     public void setTimestamp(final long timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(final String url) {
+        this.url = url;
     }
 
     public BuildInfo getMatrixBuildRef() {

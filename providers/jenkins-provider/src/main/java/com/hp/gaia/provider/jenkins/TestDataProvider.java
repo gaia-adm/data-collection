@@ -12,6 +12,8 @@ import org.apache.logging.log4j.Logger;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -51,6 +53,14 @@ public class TestDataProvider implements DataProvider {
         if (StringUtils.isEmpty(job)) {
             throw new InvalidConfigurationException("job is missing");
         }
-        return new TestDataConfiguration(locationUri, job);
+        String customTagsStr = properties.get("customTags");
+        List<String> customTagsList = new ArrayList<>();
+        if (!StringUtils.isEmpty(customTagsStr)) {
+            String[] customTagsArr = StringUtils.split(customTagsStr, ',');
+            for (String customTag : customTagsArr) {
+                customTagsList.add(StringUtils.trim(customTag));
+            }
+        }
+        return new TestDataConfiguration(customTagsList, locationUri, job);
     }
 }

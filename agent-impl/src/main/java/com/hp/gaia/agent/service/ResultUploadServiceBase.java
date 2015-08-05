@@ -89,14 +89,14 @@ public abstract class ResultUploadServiceBase implements ResultUploadService {
             }
             try {
                 int statusCode = response.getStatusLine().getStatusCode();
-                if (!(statusCode >= 200 && statusCode < 300)) {
-                    throw new RuntimeException("Failed to send data to " + uploadDataURI + ", status code " + statusCode + " " + response.getStatusLine().getReasonPhrase());
-                }
                 try {
                     EntityUtils.consume(response.getEntity());
                 } catch (IOException e) {
                     // not fatal, just log
                     logger.error("Failed to receive full response for " + uploadDataURI, e);
+                }
+                if (!(statusCode >= 200 && statusCode < 300)) {
+                    throw new RuntimeException("Failed to send data to " + uploadDataURI + ", status code " + statusCode + " " + response.getStatusLine().getReasonPhrase());
                 }
             } finally {
                 IOUtils.closeQuietly(response);

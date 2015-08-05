@@ -97,7 +97,11 @@ public class DataCollectionTask implements Runnable {
                     proxyProvider, collectionState.getBookmark(), false);
             Data data = dataStream.next();
             while (data != null) {
-                sendData(data);
+                try {
+                    sendData(data);
+                } finally {
+                    IOUtils.closeQuietly(data);
+                }
                 data = dataStream.next();
             }
         } finally {
@@ -111,6 +115,5 @@ public class DataCollectionTask implements Runnable {
         resultUploadService.sendData(providerConfig, data);
         collectionState.setBookmark(data.bookmark());
         collectionStateService.saveCollectionState(collectionState);
-        IOUtils.closeQuietly(data);
     }
 }
