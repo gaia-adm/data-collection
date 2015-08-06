@@ -45,6 +45,7 @@ public class PlannedCollectionDiscoveryJob {
             logger.debug("Planning to execute data collection for configuration '" + providerConfig.getConfigId() +
                     "' of data provider '" + providerConfig.getProviderId() + "'");
             collectionState.setState(State.PENDING);
+            collectionState.setException(null);
             collectionStateService.saveCollectionState(collectionState);
             // execute task
             DataCollectionTask dataCollectionTask = dataCollectionTaskFactory.getObject();

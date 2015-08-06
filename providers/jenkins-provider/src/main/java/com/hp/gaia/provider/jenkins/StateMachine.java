@@ -1,6 +1,7 @@
 package com.hp.gaia.provider.jenkins;
 
 import com.hp.gaia.provider.AccessDeniedException;
+import com.hp.gaia.provider.Bookmarkable;
 import com.hp.gaia.provider.CredentialsProvider;
 import com.hp.gaia.provider.Data;
 import com.hp.gaia.provider.ProxyProvider;
@@ -86,8 +87,8 @@ public class StateMachine implements Closeable, StateContext {
         }
     }
 
-    public Data next() throws AccessDeniedException {
-        Data data = null;
+    public Bookmarkable next() throws AccessDeniedException {
+        Bookmarkable data = null;
         State state = null;
         while(!stack.isEmpty()) {
             state = stack.removeFirst();

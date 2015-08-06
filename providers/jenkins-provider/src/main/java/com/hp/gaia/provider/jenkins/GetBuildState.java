@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.fasterxml.jackson.databind.node.NumericNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
+import com.hp.gaia.provider.Bookmarkable;
 import com.hp.gaia.provider.Data;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -39,15 +40,21 @@ public class GetBuildState implements State {
     }
 
     @Override
-    public Data execute(final StateContext stateContext) {
+    public Bookmarkable execute(final StateContext stateContext) {
         BuildDetails buildDetails = getBuildDetails(stateContext);
+        Bookmarkable data = null;
         if (buildDetails != null) {
             prepareNextStates(stateContext, buildDetails);
             if (inclusive) {
-                return getTestData(stateContext, buildDetails);
+                data = getTestData(stateContext, buildDetails);
             }
         }
-        return null;
+
+        if (data != null) {
+            return data;
+        } else {
+            return createBookmarkable(buildPath);
+        }
     }
 
     private Data getTestData(final StateContext stateContext, final BuildDetails buildDetails) {
@@ -55,10 +62,11 @@ public class GetBuildState implements State {
         URI locationUri = stateContext.getTestDataConfiguration().getLocation();
 
         BuildInfo buildInfo = buildPath.get(buildPath.size() - 1);
-        // http://mydtbld0049.isr.hp.com:8080/jenkins/job/AgM-job-Test-Sanity/DRIVER=chrome,FLOW_TYPE=FULL,SCM_BRANCH=master/1633/testReport/api/json?pretty=true
         final String buildUri = BuildUriUtils.createBuildUri(locationUri, buildInfo.getUriPath());
+        // do not transfer stdout,stderr,stacktrace as these can get very long
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(buildUri)
-                .path("/testReport/api/json");
+                .path("/testReport/api/json")
+                .queryParam("tree", "duration,failCount,passCount,skipCount,suites[cases[age,className,duration,errorDetails,failedSince,name,skipped,skippedMessage,status],duration,id,name,timestamp]");
         final String requestUri = uriBuilder.build().encode().toString();
         HttpGet httpGet = new HttpGet(requestUri);
         httpGet.setHeader("Accept", "application/json");
@@ -152,7 +160,6 @@ public class GetBuildState implements State {
         URI locationUri = stateContext.getTestDataConfiguration().getLocation();
 
         BuildInfo buildInfo = buildPath.get(buildPath.size() - 1);
-        // http://mydtbld0049.isr.hp.com:8080/jenkins/job/AgM-SaaS-Full-Root-master/4013/api/json?pretty=true&tree=actions[parameters[name,value]],number,building,result,timestamp,url,runs[number,url],subBuilds[buildNumber,jobName,url]
         final String buildUri = BuildUriUtils.createBuildUri(locationUri, buildInfo.getUriPath());
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(buildUri)
                 .path("/api/json")
@@ -281,5 +288,11 @@ public class GetBuildState implements State {
             // not fatal, just log
             logger.error("Failed to receive full response for " + requestUri, e);
         }
+    }
+
+    private static Bookmarkable createBookmarkable(final List<BuildInfo> buildPath) {
+        TestDataBookmark testDataBookmark = new TestDataBookmark(buildPath);
+        String bookmark = JsonSerializer.serialize(testDataBookmark);
+        return new BookmarkableImpl(bookmark);
     }
 }

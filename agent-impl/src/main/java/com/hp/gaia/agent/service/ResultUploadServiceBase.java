@@ -19,11 +19,16 @@ import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.Map;
 
 public abstract class ResultUploadServiceBase implements ResultUploadService {
@@ -64,7 +69,7 @@ public abstract class ResultUploadServiceBase implements ResultUploadService {
     }
 
     @Override
-    public void sendData(final ProviderConfig providerConfig, final Data data) {
+    public void sendData(final ProviderConfig providerConfig, final Data data) throws HttpStatusCodeException {
         final String uploadDataURI = getUploadDataURI(data);
         InputStream is = null;
         try {
@@ -89,14 +94,16 @@ public abstract class ResultUploadServiceBase implements ResultUploadService {
             }
             try {
                 int statusCode = response.getStatusLine().getStatusCode();
-                try {
-                    EntityUtils.consume(response.getEntity());
-                } catch (IOException e) {
-                    // not fatal, just log
-                    logger.error("Failed to receive full response for " + uploadDataURI, e);
-                }
                 if (!(statusCode >= 200 && statusCode < 300)) {
-                    throw new RuntimeException("Failed to send data to " + uploadDataURI + ", status code " + statusCode + " " + response.getStatusLine().getReasonPhrase());
+                    throw createResponseException(uploadDataURI, response);
+                } else {
+                    // 200x ok response, just consume it
+                    try {
+                        EntityUtils.consume(response.getEntity());
+                    } catch (IOException e) {
+                        // not fatal, just log
+                        logger.warn("Failed to receive full response from " + uploadDataURI, e);
+                    }
                 }
             } finally {
                 IOUtils.closeQuietly(response);
@@ -104,6 +111,31 @@ public abstract class ResultUploadServiceBase implements ResultUploadService {
         } finally {
             IOUtils.closeQuietly(is);
         }
+    }
+
+    private static RuntimeException createResponseException(final String uploadDataURI,
+                                                            final CloseableHttpResponse response) {
+        int statusCode = response.getStatusLine().getStatusCode();
+        String statusText = response.getStatusLine().getReasonPhrase();
+        byte[] responseBody = new byte[0];
+        try {
+            responseBody = EntityUtils.toByteArray(response.getEntity());
+        } catch (IOException e) {
+            // not fatal, just log
+            logger.warn("Failed to receive full response from " + uploadDataURI, e);
+        }
+        Charset charset = ContentType.get(response.getEntity()).getCharset();
+        RuntimeException cause = null;
+        if (statusCode >= 400 && statusCode < 500) {
+            // client exception
+            cause = new HttpClientErrorException(HttpStatus.valueOf(statusCode), statusText, responseBody, charset);
+        } else if (statusCode >= 500 && statusCode < 600) {
+            // server exception
+            cause = new HttpServerErrorException(HttpStatus.valueOf(statusCode), statusText, responseBody, charset);
+        } else {
+            cause = new RuntimeException("Unexpected status code " + statusCode);
+        }
+        return new RuntimeException("Failed to send data to " + uploadDataURI, cause);
     }
 
     private String getUploadDataURI(Data data) {

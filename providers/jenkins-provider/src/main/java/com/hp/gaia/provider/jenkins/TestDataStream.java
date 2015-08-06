@@ -1,8 +1,8 @@
 package com.hp.gaia.provider.jenkins;
 
 import com.hp.gaia.provider.AccessDeniedException;
+import com.hp.gaia.provider.Bookmarkable;
 import com.hp.gaia.provider.CredentialsProvider;
-import com.hp.gaia.provider.Data;
 import com.hp.gaia.provider.DataStream;
 import com.hp.gaia.provider.ProxyProvider;
 
@@ -25,7 +25,7 @@ public class TestDataStream implements DataStream {
     }
 
     @Override
-    public Data next() throws AccessDeniedException {
+    public Bookmarkable next() throws AccessDeniedException {
         return stateMachine.next();
     }
 

@@ -1,6 +1,6 @@
 package com.hp.gaia.provider.jenkins;
 
-import com.hp.gaia.provider.Data;
+import com.hp.gaia.provider.Bookmarkable;
 
 public interface State {
 
@@ -10,5 +10,5 @@ public interface State {
      *
      * @param stateContext
      */
-    Data execute(StateContext stateContext);
+    Bookmarkable execute(StateContext stateContext);
 }

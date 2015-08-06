@@ -1,6 +1,7 @@
 package com.hp.gaia.provider.dummy;
 
 import com.hp.gaia.provider.AccessDeniedException;
+import com.hp.gaia.provider.Bookmarkable;
 import com.hp.gaia.provider.CredentialsProvider;
 import com.hp.gaia.provider.Data;
 import com.hp.gaia.provider.DataProvider;
@@ -44,7 +45,7 @@ public class DummyDataProvider implements DataProvider {
             }
 
             @Override
-            public Data next() throws AccessDeniedException {
+            public Bookmarkable next() throws AccessDeniedException {
                 if (counter++ < 2) {
                     Map<String, String> credentials = credentialsProvider.getCredentials();
                     String proxyPassword = proxyProvider.getProxyPassword();

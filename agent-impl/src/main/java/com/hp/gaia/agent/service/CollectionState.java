@@ -36,6 +36,9 @@ public class CollectionState implements Cloneable {
     @JsonProperty("result")
     private Result result;
 
+    @JsonProperty("exception")
+    private String exception;
+
     public CollectionState() {
     }
 
@@ -91,6 +94,14 @@ public class CollectionState implements Cloneable {
         this.result = result;
     }
 
+    public String getException() {
+        return exception;
+    }
+
+    public void setException(final String exception) {
+        this.exception = exception;
+    }
+
     @Override
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
@@ -128,8 +139,10 @@ public class CollectionState implements Cloneable {
         if (state != that.state) {
             return false;
         }
-        return result == that.result;
-
+        if (result != that.result) {
+            return false;
+        }
+        return !(exception != null ? !exception.equals(that.exception) : that.exception != null);
     }
 
     @Override
@@ -140,6 +153,7 @@ public class CollectionState implements Cloneable {
         result1 = 31 * result1 + (bookmark != null ? bookmark.hashCode() : 0);
         result1 = 31 * result1 + (state != null ? state.hashCode() : 0);
         result1 = 31 * result1 + (result != null ? result.hashCode() : 0);
+        result1 = 31 * result1 + (exception != null ? exception.hashCode() : 0);
         return result1;
     }
 

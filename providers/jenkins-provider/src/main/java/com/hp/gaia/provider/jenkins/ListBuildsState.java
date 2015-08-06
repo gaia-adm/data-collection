@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.fasterxml.jackson.databind.node.NumericNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
-import com.hp.gaia.provider.Data;
+import com.hp.gaia.provider.Bookmarkable;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -46,13 +46,12 @@ public class ListBuildsState implements State {
     }
 
     @Override
-    public Data execute(final StateContext stateContext) {
+    public Bookmarkable execute(final StateContext stateContext) {
         TestDataConfiguration testDataConfiguration = stateContext.getTestDataConfiguration();
         CloseableHttpClient httpClient = stateContext.getHttpClient();
         URI locationUri = testDataConfiguration.getLocation();
         String jobName = testDataConfiguration.getJob();
 
-        // http://mydtbld0049.isr.hp.com:8080/jenkins/job/AgM-SaaS-Full-Root-master/api/json?tree=builds[number,url]
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUri(locationUri)
                 .path("/job")
                 .pathSegment(jobName)

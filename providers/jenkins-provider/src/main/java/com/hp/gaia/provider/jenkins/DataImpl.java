@@ -10,7 +10,7 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Map;
 
-public class DataImpl implements Data {
+public class DataImpl extends BookmarkableImpl implements Data {
 
     private final Map<String, String> customMetadata;
 
@@ -18,14 +18,12 @@ public class DataImpl implements Data {
 
     private final CloseableHttpResponse response;
 
-    private final String bookmark;
-
     public DataImpl(final Map<String, String> customMetadata, final String dataType,
                     final CloseableHttpResponse response, final String bookmark) {
+        super(bookmark);
         this.customMetadata = customMetadata;
         this.dataType = dataType;
         this.response = response;
-        this.bookmark = bookmark;
     }
 
     @Override
@@ -56,11 +54,6 @@ public class DataImpl implements Data {
     @Override
     public InputStream getInputStream() throws IOException {
         return response.getEntity().getContent();
-    }
-
-    @Override
-    public String bookmark() {
-        return bookmark;
     }
 
     @Override

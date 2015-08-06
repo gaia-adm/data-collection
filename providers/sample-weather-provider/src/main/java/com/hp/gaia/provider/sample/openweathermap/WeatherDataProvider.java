@@ -1,6 +1,7 @@
 package com.hp.gaia.provider.sample.openweathermap;
 
 import com.hp.gaia.provider.AccessDeniedException;
+import com.hp.gaia.provider.Bookmarkable;
 import com.hp.gaia.provider.CredentialsProvider;
 import com.hp.gaia.provider.Data;
 import com.hp.gaia.provider.DataProvider;
@@ -91,7 +92,7 @@ public class WeatherDataProvider implements DataProvider {
         }
 
         @Override
-        public Data next() throws AccessDeniedException {
+        public Bookmarkable next() throws AccessDeniedException {
             if (counter++ > 0) {
                 // workaround for missing bookmark handling, return data only once
                 logger.debug("No more data to fetch");

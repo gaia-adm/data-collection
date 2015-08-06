@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.NumericNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
-import com.hp.gaia.provider.Data;
+import com.hp.gaia.provider.Bookmarkable;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -39,7 +39,7 @@ public class GetBuildSiblingsState implements State {
     }
 
     @Override
-    public Data execute(final StateContext stateContext) {
+    public Bookmarkable execute(final StateContext stateContext) {
         List<BuildInfo> subBuilds = getSubBuilds(stateContext);
         prepareNextStates(stateContext, subBuilds);
         return null;
@@ -54,16 +54,14 @@ public class GetBuildSiblingsState implements State {
         if (subBuilds != null) {
             // prepare next states for siblings
             BuildInfo leafBuild = jobPath.get(jobPath.size() - 1);
-            boolean createSubBuildStates = false;
             for (BuildInfo subBuild : subBuilds) {
-                if (createSubBuildStates) {
-                    List<BuildInfo> newJobPath = new ArrayList<>(jobPath.subList(0, jobPath.size() - 1));
-                    newJobPath.add(subBuild);
-                    stateContext.add(new GetBuildState(newJobPath, true));
-                }
+                // create states only for builds before selected build (due to usage of stack)
                 if (ObjectUtils.equals(leafBuild.getUriPath(), subBuild.getUriPath())) {
-                    createSubBuildStates = true;
+                    break;
                 }
+                List<BuildInfo> newJobPath = new ArrayList<>(jobPath.subList(0, jobPath.size() - 1));
+                newJobPath.add(subBuild);
+                stateContext.add(new GetBuildState(newJobPath, true));
             }
         }
     }
@@ -73,7 +71,6 @@ public class GetBuildSiblingsState implements State {
         URI locationUri = stateContext.getTestDataConfiguration().getLocation();
 
         BuildInfo parentBuild = jobPath.get(jobPath.size() - 2);
-        // http://mydtbld0049.isr.hp.com:8080/jenkins/job/AgM-SaaS-Full-Root-master/4013/api/json?pretty=true&tree=subBuilds[buildNumber,jobName,url]
         final String buildUri = BuildUriUtils.createBuildUri(locationUri, parentBuild.getUriPath());
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(buildUri)
                 .path("/api/json")

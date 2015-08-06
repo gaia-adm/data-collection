@@ -24,7 +24,9 @@ public interface DataStream extends Closeable {
     boolean isNextReady();
 
     /**
-     * Returns the next data block or <code>null</code> if no next data block is available.
+     * Returns the next data block or <code>null</code> if no next data block is available. Most of the time instance of
+     * {@link Data} will be returned, but in case data is sparse with many REST calls in between it may be advantageous to
+     * return a plain {@link Bookmarkable} instead.
      */
-    Data next() throws AccessDeniedException;
+    Bookmarkable next() throws AccessDeniedException;
 }

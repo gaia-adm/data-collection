@@ -2,6 +2,7 @@ package com.hp.gaia.provider.test;
 
 import com.hp.gaia.agent.MyData;
 import com.hp.gaia.provider.AccessDeniedException;
+import com.hp.gaia.provider.Bookmarkable;
 import com.hp.gaia.provider.CredentialsProvider;
 import com.hp.gaia.provider.Data;
 import com.hp.gaia.provider.DataProvider;
@@ -110,7 +111,7 @@ public class TestProvider1 implements DataProvider {
             }
 
             @Override
-            public Data next() throws AccessDeniedException {
+            public Bookmarkable next() throws AccessDeniedException {
                 if (throwExceptionInNext != null) {
                     throw throwExceptionInNext;
                 }
