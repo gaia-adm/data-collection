@@ -135,6 +135,7 @@ public class GetBuildState implements State {
                     customMetadata.put(customTag, parameters.get(customTag));
                 }
             }
+            customMetadata.put("CUSTOM_TAGS", StringUtils.join(customTags, ','));
         }
 
         TestDataBookmark testDataBookmark = new TestDataBookmark(buildPath);
