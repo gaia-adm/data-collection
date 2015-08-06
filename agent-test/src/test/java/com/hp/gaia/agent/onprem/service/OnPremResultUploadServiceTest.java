@@ -3,13 +3,16 @@ package com.hp.gaia.agent.onprem.service;
 import com.hp.gaia.agent.MyData;
 import com.hp.gaia.agent.MyHttpRequestHandler;
 import com.hp.gaia.agent.config.ProviderConfig;
+import com.hp.gaia.agent.util.AgentExceptionUtils;
 import org.apache.http.impl.bootstrap.HttpServer;
 import org.apache.http.impl.bootstrap.ServerBootstrap;
 import org.easymock.EasyMockSupport;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.http.HttpStatus;
 import org.springframework.util.SocketUtils;
+import org.springframework.web.client.HttpServerErrorException;
 import static org.easymock.EasyMock.expect;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -117,7 +120,9 @@ public class OnPremResultUploadServiceTest extends EasyMockSupport {
             onPremResultUploadService.sendData(providerConfig, myData);
             fail("Expected exception");
         } catch (RuntimeException e) {
-            assertTrue(e.getMessage().contains("status code 500"));
+            HttpServerErrorException cause = AgentExceptionUtils.getCause(e, HttpServerErrorException.class);
+            assertNotNull(cause);
+            assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, cause.getStatusCode());
         }
         // verify mocks
         verifyAll();
