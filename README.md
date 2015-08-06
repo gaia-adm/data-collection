@@ -37,7 +37,13 @@ Sample agent.json configuration file:
   /* Socket read timeout in milliseconds */
   "soTimeout": 60000,
   /* Connect timeout in milliseconds when establishing connection to GAIA */
-  "connectTimeout": 30000
+  "connectTimeout": 30000,
+  "proxy": {
+    "httpProxy": "http://proxy.bbn.hp.com:8080",
+    "httpProxyUser": "user",
+    // password for httpProxy. Use "plain" to keep it plaintext, "encrypt" to have it encrypted
+    "httpProxyPassword": {"encrypt": "pass"}
+  }
 }
 ```
 
