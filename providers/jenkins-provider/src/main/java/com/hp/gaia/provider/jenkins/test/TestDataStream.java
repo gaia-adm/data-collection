@@ -1,10 +1,11 @@
-package com.hp.gaia.provider.jenkins;
+package com.hp.gaia.provider.jenkins.test;
 
 import com.hp.gaia.provider.AccessDeniedException;
 import com.hp.gaia.provider.Bookmarkable;
 import com.hp.gaia.provider.CredentialsProvider;
 import com.hp.gaia.provider.DataStream;
 import com.hp.gaia.provider.ProxyProvider;
+import com.hp.gaia.provider.jenkins.test.state.StateMachine;
 
 import java.io.IOException;
 

@@ -1,4 +1,4 @@
-package com.hp.gaia.provider.jenkins;
+package com.hp.gaia.provider.jenkins.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang.StringUtils;

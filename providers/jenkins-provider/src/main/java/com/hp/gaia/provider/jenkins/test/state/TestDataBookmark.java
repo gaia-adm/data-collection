@@ -1,6 +1,7 @@
-package com.hp.gaia.provider.jenkins;
+package com.hp.gaia.provider.jenkins.test.state;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.hp.gaia.provider.jenkins.build.BuildInfo;
 
 import java.util.List;
 

@@ -1,5 +1,6 @@
-package com.hp.gaia.provider.jenkins;
+package com.hp.gaia.provider.jenkins.test.state;
 
+import com.hp.gaia.provider.jenkins.test.TestDataConfiguration;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.CloseableHttpClient;
 

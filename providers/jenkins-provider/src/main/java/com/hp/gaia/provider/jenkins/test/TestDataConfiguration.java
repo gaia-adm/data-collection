@@ -1,4 +1,4 @@
-package com.hp.gaia.provider.jenkins;
+package com.hp.gaia.provider.jenkins.test;
 
 import java.net.URI;
 import java.util.List;

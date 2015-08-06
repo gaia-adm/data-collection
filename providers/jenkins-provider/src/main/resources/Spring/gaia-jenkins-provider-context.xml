@@ -7,6 +7,6 @@
 
     <context:annotation-config/>
 
-    <bean id="jenkins_testDataProvider" class="com.hp.gaia.provider.jenkins.TestDataProvider"/>
+    <bean id="jenkins_testDataProvider" class="com.hp.gaia.provider.jenkins.test.TestDataProvider"/>
 
 </beans>

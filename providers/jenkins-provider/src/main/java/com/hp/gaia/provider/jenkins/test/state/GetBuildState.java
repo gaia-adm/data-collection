@@ -1,4 +1,4 @@
-package com.hp.gaia.provider.jenkins;
+package com.hp.gaia.provider.jenkins.test.state;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -8,6 +8,13 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.hp.gaia.provider.Bookmarkable;
 import com.hp.gaia.provider.Data;
+import com.hp.gaia.provider.jenkins.build.BuildDetails;
+import com.hp.gaia.provider.jenkins.build.BuildInfo;
+import com.hp.gaia.provider.jenkins.build.BuildUriUtils;
+import com.hp.gaia.provider.jenkins.common.BookmarkableImpl;
+import com.hp.gaia.provider.jenkins.common.DataImpl;
+import com.hp.gaia.provider.jenkins.test.TestDataConfiguration;
+import com.hp.gaia.provider.jenkins.util.JsonSerializer;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;

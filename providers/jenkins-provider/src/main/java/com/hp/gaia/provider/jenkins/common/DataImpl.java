@@ -1,4 +1,4 @@
-package com.hp.gaia.provider.jenkins;
+package com.hp.gaia.provider.jenkins.common;
 
 import com.hp.gaia.provider.Data;
 import org.apache.commons.io.IOUtils;

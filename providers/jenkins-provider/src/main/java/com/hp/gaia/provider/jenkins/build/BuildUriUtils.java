@@ -1,4 +1,4 @@
-package com.hp.gaia.provider.jenkins;
+package com.hp.gaia.provider.jenkins.build;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.web.util.UriComponentsBuilder;

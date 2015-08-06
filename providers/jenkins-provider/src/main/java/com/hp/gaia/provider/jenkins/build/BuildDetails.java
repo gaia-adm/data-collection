@@ -1,4 +1,4 @@
-package com.hp.gaia.provider.jenkins;
+package com.hp.gaia.provider.jenkins.build;
 
 import java.util.List;
 import java.util.Map;

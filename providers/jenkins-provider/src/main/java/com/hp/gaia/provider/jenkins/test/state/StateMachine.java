@@ -1,10 +1,12 @@
-package com.hp.gaia.provider.jenkins;
+package com.hp.gaia.provider.jenkins.test.state;
 
 import com.hp.gaia.provider.AccessDeniedException;
 import com.hp.gaia.provider.Bookmarkable;
 import com.hp.gaia.provider.CredentialsProvider;
-import com.hp.gaia.provider.Data;
 import com.hp.gaia.provider.ProxyProvider;
+import com.hp.gaia.provider.jenkins.build.BuildInfo;
+import com.hp.gaia.provider.jenkins.test.TestDataConfiguration;
+import com.hp.gaia.provider.jenkins.util.JsonSerializer;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpHost;
@@ -20,7 +22,6 @@ import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.util.CollectionUtils;
-
 import static java.util.Arrays.asList;
 
 import java.io.Closeable;
