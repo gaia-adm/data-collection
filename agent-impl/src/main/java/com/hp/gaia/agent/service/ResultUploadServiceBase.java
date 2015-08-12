@@ -145,7 +145,7 @@ public abstract class ResultUploadServiceBase implements ResultUploadService {
         Map<String, String> metadata = data.getCustomMetadata();
         if (metadata != null) {
             for (Map.Entry<String, String> entry : metadata.entrySet()) {
-                builder.queryParam("c_" + entry.getKey(), entry.getValue());
+                builder.queryParam("C_" + entry.getKey(), entry.getValue());
             }
         }
         return builder.build().encode().toString();
