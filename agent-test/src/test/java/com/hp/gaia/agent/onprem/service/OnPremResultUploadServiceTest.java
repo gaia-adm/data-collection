@@ -86,7 +86,7 @@ public class OnPremResultUploadServiceTest extends EasyMockSupport {
         final Map<String, String> lastParams = myHttpRequestHandler.getLastParams();
         assertNotNull(lastParams);
         assertEquals(2, lastParams.size());
-        assertEquals("value1", lastParams.get("c_key1"));
+        assertEquals("value1", lastParams.get("C_key1"));
         assertEquals("testMetric/testCategory", lastParams.get("dataType"));
         Map<String, String> httpHeaders = myHttpRequestHandler.getLastHeaders();
         assertEquals("application/json; charset=UTF-8", httpHeaders.get("Content-Type"));
