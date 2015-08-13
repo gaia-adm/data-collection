@@ -8,6 +8,7 @@ import com.hp.gaia.provider.DataProvider;
 import com.hp.gaia.provider.DataStream;
 import com.hp.gaia.provider.InvalidConfigurationException;
 import com.hp.gaia.provider.ProxyProvider;
+import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -20,6 +21,7 @@ import java.util.Random;
 /**
  * Provider for dev/test purposes.
  */
+@Component
 public class DummyDataProvider implements DataProvider {
 
     @Override

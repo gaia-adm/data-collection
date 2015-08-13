@@ -9,13 +9,13 @@ import com.hp.gaia.provider.jenkins.test.state.StateMachine;
 
 import java.io.IOException;
 
-public class TestDataStream implements DataStream {
+public class JenkinsTestDataStream implements DataStream {
 
     private final StateMachine stateMachine;
 
-    public TestDataStream(final TestDataConfiguration testDataConfiguration,
-                          final CredentialsProvider credentialsProvider, final ProxyProvider proxyProvider,
-                          final String bookmark, final boolean inclusive) {
+    public JenkinsTestDataStream(final JenkinsTestDataConfig testDataConfiguration,
+                                 final CredentialsProvider credentialsProvider, final ProxyProvider proxyProvider,
+                                 final String bookmark, final boolean inclusive) {
         stateMachine = new StateMachine(testDataConfiguration, credentialsProvider, proxyProvider);
         stateMachine.init(bookmark, inclusive);
     }

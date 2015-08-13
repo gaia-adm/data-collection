@@ -3,7 +3,7 @@ package com.hp.gaia.provider.jenkins.test;
 import java.net.URI;
 import java.util.List;
 
-public class TestDataConfiguration {
+public class JenkinsTestDataConfig {
 
     private final List<String> customTags;
 
@@ -11,7 +11,7 @@ public class TestDataConfiguration {
 
     private final String job;
 
-    public TestDataConfiguration(final List<String> customTags, final URI location, final String job) {
+    public JenkinsTestDataConfig(final List<String> customTags, final URI location, final String job) {
         this.customTags = customTags;
         this.location = location;
         this.job = job;
@@ -31,7 +31,7 @@ public class TestDataConfiguration {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("TestDataConfiguration{");
+        final StringBuilder sb = new StringBuilder("JenkinsTestDataConfig{");
         sb.append("customTags=").append(customTags);
         sb.append(", location=").append(location);
         sb.append(", job='").append(job).append('\'');

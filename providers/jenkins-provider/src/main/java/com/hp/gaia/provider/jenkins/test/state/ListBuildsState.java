@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
 import com.hp.gaia.provider.Bookmarkable;
 import com.hp.gaia.provider.jenkins.build.BuildInfo;
 import com.hp.gaia.provider.jenkins.build.BuildUriUtils;
-import com.hp.gaia.provider.jenkins.test.TestDataConfiguration;
+import com.hp.gaia.provider.jenkins.test.JenkinsTestDataConfig;
 import com.hp.gaia.provider.jenkins.util.JsonSerializer;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
@@ -51,7 +51,7 @@ public class ListBuildsState implements State {
 
     @Override
     public Bookmarkable execute(final StateContext stateContext) {
-        TestDataConfiguration testDataConfiguration = stateContext.getTestDataConfiguration();
+        JenkinsTestDataConfig testDataConfiguration = stateContext.getTestDataConfiguration();
         CloseableHttpClient httpClient = stateContext.getHttpClient();
         URI locationUri = testDataConfiguration.getLocation();
         String jobName = testDataConfiguration.getJob();
@@ -94,7 +94,7 @@ public class ListBuildsState implements State {
      * Processes list of builds. Note that the build list starts with the latest build and goes into the past.
      */
     private void processBuildList(StateContext stateContext, final HttpResponse response) {
-        final TestDataConfiguration testDataConfiguration = stateContext.getTestDataConfiguration();
+        final JenkinsTestDataConfig testDataConfiguration = stateContext.getTestDataConfiguration();
         LinkedList<State> stack = new LinkedList<>();
         InputStream is = null;
         try {
@@ -125,7 +125,7 @@ public class ListBuildsState implements State {
         }
     }
 
-    private boolean processBuildNode(final TestDataConfiguration testDataConfiguration, final Deque<State> stack,
+    private boolean processBuildNode(final JenkinsTestDataConfig testDataConfiguration, final Deque<State> stack,
                                      final ObjectNode buildNode) {
         NumericNode numberNode = (NumericNode) buildNode.get("number");
         int number = numberNode.asInt();
@@ -158,7 +158,7 @@ public class ListBuildsState implements State {
         return false;
     }
 
-    private static void addGetBuildState(TestDataConfiguration testDataConfiguration, Deque<State> stack,
+    private static void addGetBuildState(JenkinsTestDataConfig testDataConfiguration, Deque<State> stack,
                                          int number, String url, boolean inclusive) {
         URI locationUri = testDataConfiguration.getLocation();
         String jobName = testDataConfiguration.getJob();

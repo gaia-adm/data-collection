@@ -9,6 +9,7 @@ import com.hp.gaia.provider.ProxyProvider;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Component;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -19,9 +20,10 @@ import java.util.Map;
 /**
  * Jenkins provider of test data.
  */
-public class TestDataProvider implements DataProvider {
+@Component
+public class JenkinsTestDataProvider implements DataProvider {
 
-    private static final Logger logger = LogManager.getLogger(TestDataProvider.class);
+    private static final Logger logger = LogManager.getLogger(JenkinsTestDataProvider.class);
 
     @Override
     public String getProviderId() {
@@ -32,12 +34,12 @@ public class TestDataProvider implements DataProvider {
     public DataStream fetchData(final Map<String, String> properties, final CredentialsProvider credentialsProvider,
                                 final ProxyProvider proxyProvider, final String bookmark, final boolean inclusive)
             throws AccessDeniedException, InvalidConfigurationException {
-        TestDataConfiguration testDataConfiguration = getTestDataConfiguration(properties);
+        JenkinsTestDataConfig testDataConfiguration = getTestDataConfiguration(properties);
         logger.debug("About to fetch test data for " + testDataConfiguration.getJob());
-        return new TestDataStream(testDataConfiguration, credentialsProvider, proxyProvider, bookmark, inclusive);
+        return new JenkinsTestDataStream(testDataConfiguration, credentialsProvider, proxyProvider, bookmark, inclusive);
     }
 
-    private static TestDataConfiguration getTestDataConfiguration(final Map<String, String> properties) {
+    private static JenkinsTestDataConfig getTestDataConfiguration(final Map<String, String> properties) {
         String location = properties.get("location");
         if (StringUtils.isEmpty(location)) {
             throw new InvalidConfigurationException("location is missing");
@@ -61,6 +63,6 @@ public class TestDataProvider implements DataProvider {
                 customTagsList.add(StringUtils.trim(customTag));
             }
         }
-        return new TestDataConfiguration(customTagsList, locationUri, job);
+        return new JenkinsTestDataConfig(customTagsList, locationUri, job);
     }
 }

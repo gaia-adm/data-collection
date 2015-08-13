@@ -13,7 +13,7 @@ import com.hp.gaia.provider.jenkins.build.BuildInfo;
 import com.hp.gaia.provider.jenkins.build.BuildUriUtils;
 import com.hp.gaia.provider.jenkins.common.BookmarkableImpl;
 import com.hp.gaia.provider.jenkins.common.DataImpl;
-import com.hp.gaia.provider.jenkins.test.TestDataConfiguration;
+import com.hp.gaia.provider.jenkins.test.JenkinsTestDataConfig;
 import com.hp.gaia.provider.jenkins.util.JsonSerializer;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -125,7 +125,7 @@ public class GetBuildState implements State {
         final BuildInfo rootBuild = buildPath.get(0);
         customMetadata.put("ROOT_JOB_NAME", rootBuild.getJob());
         customMetadata.put("ROOT_BUILD_NUMBER", String.valueOf(rootBuild.getBuildNumber()));
-        TestDataConfiguration testDataConfiguration = stateContext.getTestDataConfiguration();
+        JenkinsTestDataConfig testDataConfiguration = stateContext.getTestDataConfiguration();
         // also add custom tags
         List<String> customTags = testDataConfiguration.getCustomTags();
         if (customTags != null) {
@@ -204,7 +204,7 @@ public class GetBuildState implements State {
     }
 
     private BuildDetails parseBuildDetails(final StateContext stateContext, BuildInfo buildInfo, final CloseableHttpResponse response) {
-        TestDataConfiguration testDataConfiguration = stateContext.getTestDataConfiguration();
+        JenkinsTestDataConfig testDataConfiguration = stateContext.getTestDataConfiguration();
         BuildDetails buildDetails = new BuildDetails();
         InputStream is = null;
         try {

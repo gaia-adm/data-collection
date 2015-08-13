@@ -5,7 +5,7 @@ import com.hp.gaia.provider.Bookmarkable;
 import com.hp.gaia.provider.CredentialsProvider;
 import com.hp.gaia.provider.ProxyProvider;
 import com.hp.gaia.provider.jenkins.build.BuildInfo;
-import com.hp.gaia.provider.jenkins.test.TestDataConfiguration;
+import com.hp.gaia.provider.jenkins.test.JenkinsTestDataConfig;
 import com.hp.gaia.provider.jenkins.util.JsonSerializer;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -40,7 +40,7 @@ public class StateMachine implements Closeable, StateContext {
 
     private static final Logger logger = LogManager.getLogger(StateMachine.class);
 
-    private final TestDataConfiguration testDataConfiguration;
+    private final JenkinsTestDataConfig testDataConfiguration;
 
     private final CredentialsProvider credentialsProvider;
 
@@ -50,7 +50,7 @@ public class StateMachine implements Closeable, StateContext {
 
     private final LinkedList<State> stack = new LinkedList<>();
 
-    public StateMachine(final TestDataConfiguration testDataConfiguration,
+    public StateMachine(final JenkinsTestDataConfig testDataConfiguration,
                         final CredentialsProvider credentialsProvider, final ProxyProvider proxyProvider) {
         this.testDataConfiguration = testDataConfiguration;
         this.credentialsProvider = credentialsProvider;
@@ -145,7 +145,7 @@ public class StateMachine implements Closeable, StateContext {
     }
 
     @Override
-    public TestDataConfiguration getTestDataConfiguration() {
+    public JenkinsTestDataConfig getTestDataConfiguration() {
         return testDataConfiguration;
     }
 
