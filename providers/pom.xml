@@ -16,6 +16,7 @@
     <modules>
         <module>alm-provider</module>
         <module>jenkins-provider</module>
+        <module>circleci-provider</module>
         <module>dummy-provider</module>
         <module>sample-weather-provider</module>
     </modules>
