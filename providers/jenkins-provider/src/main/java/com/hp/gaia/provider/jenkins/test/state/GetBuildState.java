@@ -116,7 +116,7 @@ public class GetBuildState implements State {
                             final BuildDetails buildDetails) {
         Map<String, String> customMetadata = new HashMap<>();
         BuildInfo buildInfo = buildPath.get(buildPath.size() - 1);
-        customMetadata.put("LOCATION_URI", stateContext.getTestDataConfiguration().getLocation().toString());
+        customMetadata.put("BUILD_SERVER_URI", stateContext.getTestDataConfiguration().getLocation().toString());
         customMetadata.put("JOB_NAME", buildInfo.getJob());
         customMetadata.put("BUILD_URI_PATH", buildInfo.getUriPath());
         customMetadata.put("BUILD_NUMBER", String.valueOf(buildDetails.getNumber()));

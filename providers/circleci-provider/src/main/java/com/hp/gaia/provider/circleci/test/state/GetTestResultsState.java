@@ -84,7 +84,7 @@ public class GetTestResultsState implements State {
         customMetadata.put("SCM_BRANCH", buildDetails.getBranch());
         customMetadata.put("SCM_REPO_NAME", buildDetails.getReponame());
         customMetadata.put("SCM_URL", buildDetails.getVcsUrl());
-        customMetadata.put("LOCATION_URI", buildDetails.getBuildUrl());
+        customMetadata.put("BUILD_URI", buildDetails.getBuildUrl());
         customMetadata.put("BUILD_NUMBER", String.valueOf(buildDetails.getNumber()));
         customMetadata.put("BUILD_STATUS", String.valueOf(buildDetails.getStatus()));
         customMetadata.put("BUILD_START_TIME", String.valueOf(buildDetails.getStartTime()));
