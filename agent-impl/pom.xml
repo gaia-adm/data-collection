@@ -112,6 +112,10 @@
             <id>dummy-provider</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
+                <property>
+                    <name>dummy-provider</name>
+                    <value>true</value>
+                </property>
             </activation>
             <dependencies>
                 <dependency>
@@ -124,6 +128,10 @@
             <id>sample-weather-provider</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
+                <property>
+                    <name>sample-weather-provider</name>
+                    <value>true</value>
+                </property>
             </activation>
             <dependencies>
                 <dependency>
