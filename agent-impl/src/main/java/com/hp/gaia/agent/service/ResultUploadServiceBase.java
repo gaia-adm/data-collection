@@ -100,6 +100,7 @@ public abstract class ResultUploadServiceBase implements ResultUploadService {
                     // 200x ok response, just consume it
                     try {
                         EntityUtils.consume(response.getEntity());
+                        logger.debug("Data sent successfully");
                     } catch (IOException e) {
                         // not fatal, just log
                         logger.warn("Failed to receive full response from " + uploadDataURI, e);
