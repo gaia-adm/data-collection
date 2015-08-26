@@ -49,6 +49,13 @@
             <artifactId>httpclient</artifactId>
         </dependency>
 
+        <!-- test dependencies -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit-dep</artifactId>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
 </project>
