@@ -52,6 +52,7 @@ public class IssueChangeState implements State {
     }
 
     //Login to ALM and bring issue changes appear in audit tables starting from auditID stored in previous run bookmark
+    //TODO - boris: support paging
     private Data getIssueChanges(StateContext stateContext) throws URISyntaxException {
 
         URI locationUri = stateContext.getIssueChangeDataConfiguration().getLocation();

@@ -33,6 +33,6 @@ public class AlmIssueChangeDataStream implements DataStream {
 
     @Override
     public void close() throws IOException {
-
+        stateMachine.close();
     }
 }
