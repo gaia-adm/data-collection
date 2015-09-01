@@ -72,4 +72,30 @@ public class AlmXmlUtils {
         return counter;
     }
 
+    /**
+     * Get a value of the numeric attribute of the tag
+     * NOTE: returns 0, in case of exception
+     * @param xmlString - XML to be checked
+     * @param tagName - tag name
+     * @param attrName - attribute name with the integer value
+     * @return - integer value of the attribute
+     */
+    public int getIntegerAttributeValue(String xmlString, String tagName, String attrName) {
+        int result = 0;
+        XMLInputFactory factory = XMLInputFactory.newInstance();
+        try {
+            XMLStreamReader reader = factory.createXMLStreamReader(new ByteArrayInputStream(xmlString.getBytes()));
+            while (reader.hasNext()) {
+                int event = reader.next();
+                if (event == XMLStreamConstants.START_ELEMENT && reader.getLocalName().equals(tagName)) {
+                    result = Integer.parseInt(reader.getAttributeValue(reader.getNamespaceURI(), "TotalResults"));
+                }
+            }
+        } catch (XMLStreamException e) {
+            e.printStackTrace();
+        }
+        log.debug("Value of attribute " + attrName + " in tag " + tagName + " is " +result);
+        return result;
+    }
+
 }

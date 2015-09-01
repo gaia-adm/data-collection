@@ -67,4 +67,8 @@ public class DataImpl implements Data {
     public void close() throws IOException {
         IOUtils.closeQuietly(response);
     }
+
+    public CloseableHttpResponse getResponse() {
+        return response;
+    }
 }

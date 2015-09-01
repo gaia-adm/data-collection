@@ -1,6 +1,7 @@
 package com.hp.gaia.provider.alm.util;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.Header;
@@ -11,6 +12,7 @@ import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
@@ -176,5 +178,22 @@ public class AlmRestUtils {
             log.error("Failed to receive full response for " + requestUri, e);
         }
     }
+
+    public URIBuilder prepareGetEntityAuditsUrl(URI locationUri, String domain, String project, String parentType, int parentId, int id, int pageSize, int startIndex, String orderByTime) {
+        URIBuilder builder = new URIBuilder();
+        builder.setScheme(locationUri.getScheme()).setHost(locationUri.getHost()).setPort(locationUri.getPort()).setPath(locationUri.getPath() + "/rest/domains/" + domain + "/projects/" + project + "/audits")
+                .addParameter("query", "{parent-type[" + parentType + "];parent-id[>" + parentId + "];id[>" + id + "]}")
+                .addParameter("page-size", Integer.toString(pageSize))
+                .addParameter("start-index", Integer.toString(startIndex));
+        if(StringUtils.isNotEmpty(orderByTime)){
+            if(orderByTime.equals("desc")){
+                builder.addParameter("order-by", "{time[desc]}");
+            } else if(orderByTime.equals("asc")){
+                builder.addParameter("order-by", "{time[asc]}");
+            }
+        }
+        return builder;
+    }
+
 
 }

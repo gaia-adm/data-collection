@@ -13,7 +13,9 @@ public class IssueChangeBookmark {
     }
 
     public void setLastAuditId(int lastAuditId) {
-        this.lastAuditId = lastAuditId;
+        if(lastAuditId > this.lastAuditId ){
+            this.lastAuditId = lastAuditId;
+        }
     }
 
     @Override

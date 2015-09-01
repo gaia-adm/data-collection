@@ -4,6 +4,7 @@ import com.hp.gaia.provider.AccessDeniedException;
 import com.hp.gaia.provider.Bookmarkable;
 import com.hp.gaia.provider.CredentialsProvider;
 import com.hp.gaia.provider.ProxyProvider;
+import com.hp.gaia.provider.alm.util.AlmXmlUtils;
 import com.hp.gaia.provider.alm.util.JsonSerializer;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -13,6 +14,7 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.*;
 import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
+import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -38,8 +40,11 @@ public class StateMachine implements Closeable, StateContext {
 
     private CloseableHttpClient httpclient;
 
-
     private final LinkedList<State> stack = new LinkedList<>();
+
+    public final static int PAGE_SIZE = 100;
+    private int nextStartIndex = 1;
+    private int totalReceivedResults = 0;
 
     public StateMachine(final AlmIssueChangeDataConfig dataConfig, final CredentialsProvider credentialsProvider, final ProxyProvider proxyProvider, String providerId) {
         this.dataConfig = dataConfig;
@@ -48,12 +53,15 @@ public class StateMachine implements Closeable, StateContext {
         this.dataType = providerId;
     }
 
+    public int getNextStartIndex() {
+        return nextStartIndex;
+    }
+
     /**
      * Initializes 1st state based on supplied bookmark.
      * NOTE: inclusive is not in use currently, any data fetch will be done for auditID bigger than bookmarked (i.e., inclusive = false)
      */
     public void init(final String bookmark, final boolean inclusive) {
-
         this.httpclient = createHttpClient();
 
         IssueChangeState state = new IssueChangeState();
@@ -64,22 +72,39 @@ public class StateMachine implements Closeable, StateContext {
             }
         }
         log.debug("Starting with auditId " + state.getAuditId());
+
         add(state);
     }
 
+
     //invoke the collection
     public Bookmarkable next() throws AccessDeniedException {
-
         Bookmarkable data = null;
         State state;
         while(!stack.isEmpty()) {
             state = stack.removeFirst();
             data = state.execute(this);
             if (data != null) {
+                try {
+                    String content = EntityUtils.toString(((DataImpl) data).getResponse().getEntity());
+                    AlmXmlUtils almXmlUtils = new AlmXmlUtils();
+                    int totalResults = almXmlUtils.getIntegerAttributeValue(content, "Audits", "TotalResults");
+                    int resultsReceived = almXmlUtils.countTags(content, "Audit");
+                    log.debug("Results received in the last request: " + resultsReceived);
+                    totalReceivedResults += resultsReceived;
+                    log.debug("Total results received in current iteration: " + totalReceivedResults);
+                    if(totalReceivedResults< totalResults){
+                        log.debug("Some data is still waiting, another request should executed; total results: " + totalResults + ", received till now: " + totalReceivedResults + ", left: " + (totalResults-totalReceivedResults));
+                        add(state);
+                    }
+                } catch (IOException e) {
+                    log.error(e);
+                    throw new RuntimeException("Failed to read the response; " + e.getMessage());
+                }
+                nextStartIndex = nextStartIndex +PAGE_SIZE;
                 break;
             }
         }
-
         return data;
     }
 

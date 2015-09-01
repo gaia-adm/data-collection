@@ -5,19 +5,12 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamReader;
-import java.io.ByteArrayInputStream;
-
 /**
  * Created by belozovs on 8/26/2015.
  * Test for ALM XML Utils
  */
 public class AlmXmlUtilsTest {
 
-    private XMLInputFactory factory;
-    private XMLStreamReader reader;
     private AlmXmlUtils almXmlUtils;
 
     private static final String xmlString = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Audits TotalResults=\"3\"><Audit><Id>2</Id><Action>UPDATE</Action><ParentId>1\n" +
@@ -29,8 +22,6 @@ public class AlmXmlUtilsTest {
 
     @Before
     public void setUp() throws Exception {
-        factory = XMLInputFactory.newInstance();
-        reader = factory.createXMLStreamReader(new ByteArrayInputStream(xmlString.getBytes()));
         almXmlUtils = new AlmXmlUtils();
     }
 
@@ -47,4 +38,11 @@ public class AlmXmlUtilsTest {
         int counter = almXmlUtils.countTags(xmlString, "Audit");
         Assert.assertEquals("The number of audit events should be 3", 3, counter);
     }
+
+    @Test
+    public void testGetIntAttributeValue() throws Exception {
+        int totalResults = almXmlUtils.getIntegerAttributeValue(xmlString, "Audits", "TotalResults");
+        Assert.assertEquals("The total result attribute should be 3", 3, totalResults);
+    }
+
 }

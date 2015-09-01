@@ -52,7 +52,6 @@ public class IssueChangeState implements State {
     }
 
     //Login to ALM and bring issue changes appear in audit tables starting from auditID stored in previous run bookmark
-    //TODO - boris: support paging
     private Data getIssueChanges(StateContext stateContext) throws URISyntaxException {
 
         URI locationUri = stateContext.getIssueChangeDataConfiguration().getLocation();
@@ -63,10 +62,7 @@ public class IssueChangeState implements State {
         AlmRestUtils almRestUtils = new AlmRestUtils(stateContext.getHttpClient());
         almRestUtils.login(locationUri, credentials);
         log.debug("Loged in successfully with user " + credentials.get("username"));
-        URIBuilder builder = new URIBuilder();
-        builder.setScheme(locationUri.getScheme()).setHost(locationUri.getHost()).setPort(locationUri.getPort()).setPath(locationUri.getPath() + "/rest/domains/" + domain + "/projects/" + project + "/audits")
-                .addParameter("query", "{parent-type[defect];parent-id[>0];id[>" + auditId + "]}")
-                .addParameter("order-by", "{time[asc]}");
+        URIBuilder builder = almRestUtils.prepareGetEntityAuditsUrl(locationUri, domain, project, "defect", 0, auditId, StateMachine.PAGE_SIZE, ((StateMachine) stateContext).getNextStartIndex(), "asc");
         return createData(stateContext, almRestUtils.runGetRequest(builder.build()));
     }
 
