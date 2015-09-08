@@ -1,0 +1,18 @@
+{
+  "providers": [
+    {
+      "configId": "jenkins_AGM",
+      "providerId": "jenkins/test",
+      /*"credentialsId": "yourCredsId",*/
+      "properties": {
+        "location": "http://yourserver:8080/jenkins",
+        "job": "AgM-SaaS-Full-Root-master",
+        "customTags": "SCM_BRANCH,FLOW_TYPE,SCHEMA_VERSION"
+      },
+      "runPeriod": 60,
+      "proxy": {
+        "httpProxy": "http://proxy.bbn.hp.com:8080"
+      }
+    }
+  ]
+}
