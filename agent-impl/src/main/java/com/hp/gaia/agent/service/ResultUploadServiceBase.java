@@ -141,7 +141,7 @@ public abstract class ResultUploadServiceBase implements ResultUploadService {
 
     private String getUploadDataURI(Data data) {
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(agentConfigService.getGaiaLocation())
-                .path("/result-upload/rest/v1/upload-data");
+                .path("/result-upload/v1/upload-data");
         builder.queryParam("dataType", data.getDataType());
         Map<String, String> metadata = data.getCustomMetadata();
         if (metadata != null) {

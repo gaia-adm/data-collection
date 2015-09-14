@@ -72,7 +72,7 @@ public class OnPremResultUploadServiceTest extends EasyMockSupport {
         // replay mocks
         replayAll();
         onPremResultUploadService.init(5);
-        final String expectedUriPath = "/result-upload/rest/v1/upload-data";
+        final String expectedUriPath = "/result-upload/v1/upload-data";
         ProviderConfig providerConfig = new ProviderConfig("testConfigId", "testProviderId", null, null, null, 60);
         Map<String, String> metadata = new HashMap<>();
         metadata.put("key1", "value1");
