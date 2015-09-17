@@ -74,6 +74,10 @@
         <!-- providers -->
         <dependency>
             <groupId>com.hp.gaia.data-collection</groupId>
+            <artifactId>agm-provider</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.hp.gaia.data-collection</groupId>
             <artifactId>alm-provider</artifactId>
         </dependency>
         <dependency>

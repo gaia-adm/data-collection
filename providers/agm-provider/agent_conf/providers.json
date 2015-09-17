@@ -1,0 +1,22 @@
+{
+  "providers": [
+    {
+      // Unique provider configuration id. It may be a number or string.
+      "configId": "issue_change_AGM_SaaS",
+      // Id of provider this configuration is for. List of allowed providerIds depends on bundled providers. See DataProvider implementations.
+      "providerId": "agm/issue/change",
+      /*"credentialsId": "yourCredsId",*/
+      // Provider specific configuration properties, defined by DataProvider implementation.
+      "properties": {
+          "location": "https://agilemanager-int.saas.hp.com/agm",
+          "project": "Main",
+          "domain": "saas_hp_25_ALMaaS_919190571",
+          "tenantId": "919190571"
+      },
+      "runPeriod": 60,
+      "proxy": {
+        "httpProxy": "http://proxy.bbn.hp.com:8080"
+      }
+    }
+  ]
+}
