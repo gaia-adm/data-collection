@@ -14,6 +14,7 @@
     <version>1.0-SNAPSHOT</version>
 
     <modules>
+        <module>agm-provider</module>
         <module>alm-provider</module>
         <module>jenkins-provider</module>
         <module>circleci-provider</module>
