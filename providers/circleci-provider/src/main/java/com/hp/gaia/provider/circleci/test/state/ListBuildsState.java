@@ -4,11 +4,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.NumericNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
 import com.hp.gaia.provider.Bookmarkable;
 import com.hp.gaia.provider.circleci.build.BuildDetails;
 import com.hp.gaia.provider.circleci.test.CircleTestDataConfig;
 import com.hp.gaia.provider.circleci.util.JsonSerializer;
+import com.hp.gaia.provider.circleci.util.JsonUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -94,6 +94,9 @@ public class ListBuildsState implements State {
                         // skip running builds and any builds before it
                         buildDetailsList.clear();
                         continue;
+                    } else if ("not_run".equals(buildDetails.getStatus())) {
+                        // skip builds that didn't execute, they have no tests
+                        continue;
                     }
                     if (fromBuild == null || buildDetails.getNumber() > fromBuild ||
                             (buildDetails.getNumber() == fromBuild && inclusive)) {
@@ -148,19 +151,13 @@ public class ListBuildsState implements State {
 
         NumericNode buildNumNode = (NumericNode) buildNode.get("build_num");
         buildDetails.setNumber(buildNumNode.asInt());
-        TextNode buildUrlNode = (TextNode) buildNode.get("build_url");
-        buildDetails.setBuildUrl(buildUrlNode.asText());
-        TextNode startTimeNode = (TextNode) buildNode.get("start_time");
-        buildDetails.setStartTime(startTimeNode.asText());
-        TextNode statusNode = (TextNode) buildNode.get("status");
-        buildDetails.setStatus(statusNode.asText());
+        buildDetails.setBuildUrl(JsonUtils.getStringValue(buildNode, "build_url"));
+        buildDetails.setStartTime(JsonUtils.getStringValue(buildNode, "start_time"));
+        buildDetails.setStatus(JsonUtils.getStringValue(buildNode, "status"));
 
-        TextNode vcsUrlNode = (TextNode) buildNode.get("vcs_url");
-        buildDetails.setVcsUrl(vcsUrlNode.asText());
-        TextNode reponameNode = (TextNode) buildNode.get("reponame");
-        buildDetails.setReponame(reponameNode.asText());
-        TextNode branchNode = (TextNode) buildNode.get("branch");
-        buildDetails.setBranch(branchNode.asText());
+        buildDetails.setVcsUrl(JsonUtils.getStringValue(buildNode, "vcs_url"));
+        buildDetails.setReponame(JsonUtils.getStringValue(buildNode, "reponame"));
+        buildDetails.setBranch(JsonUtils.getStringValue(buildNode, "branch"));
 
         return buildDetails;
     }
