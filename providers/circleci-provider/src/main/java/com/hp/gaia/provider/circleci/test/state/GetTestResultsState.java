@@ -25,6 +25,8 @@ public class GetTestResultsState implements State {
 
     private BuildDetails buildDetails;
 
+    private static final String BUILD_SERVER_URI = "https://circleci.com";
+
     public GetTestResultsState(final BuildDetails buildDetails) {
         this.buildDetails = buildDetails;
     }
@@ -39,7 +41,7 @@ public class GetTestResultsState implements State {
         CloseableHttpClient httpClient = stateContext.getHttpClient();
         String username = testDataConfiguration.getUsername();
         String project = testDataConfiguration.getProject();
-        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString("https://circleci.com/api/v1/project")
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(BUILD_SERVER_URI + "/api/v1/project")
                 .path("/" + username)
                 .path("/" + project)
                 .path("/" + buildDetails.getNumber())
@@ -85,6 +87,7 @@ public class GetTestResultsState implements State {
         customMetadata.put("SCM_REPO_NAME", buildDetails.getReponame());
         customMetadata.put("SCM_URL", buildDetails.getVcsUrl());
         customMetadata.put("BUILD_URI", buildDetails.getBuildUrl());
+        customMetadata.put("BUILD_SERVER_URI", BUILD_SERVER_URI);
         customMetadata.put("BUILD_NUMBER", String.valueOf(buildDetails.getNumber()));
         customMetadata.put("BUILD_STATUS", String.valueOf(buildDetails.getStatus()));
         customMetadata.put("BUILD_START_TIME", String.valueOf(buildDetails.getStartTime()));
