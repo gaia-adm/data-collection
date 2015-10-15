@@ -43,7 +43,8 @@ public class AlmRestUtils {
      * Login to ALM
      * Includes authentication and session creation
      * Method does not return any value, all needed cookies (LWSSO_COOKIE_KEY, ALM_USER, QC_SESSION) are stored in CookiesStorage of HttpClient
-     * @param baseUri - as set in providers.json, generally http://<host>:<port>/qcbin
+     *
+     * @param baseUri     - as set in providers.json, generally http://<host>:<port>/qcbin
      * @param credentials - map of credentials, as defined in credentials.json
      */
     public void login(URI baseUri, Map<String, String> credentials) {
@@ -62,6 +63,7 @@ public class AlmRestUtils {
      * Run any GET request against given URI
      * Accept and Content-Type are set to application/xml only (this is the only format supported by ALM)
      * Prerequisites: login passed
+     *
      * @param uri - URI to call
      * @return - CloseableHttpResponse for further usage
      */
@@ -106,6 +108,7 @@ public class AlmRestUtils {
      * Run any POST request against given URI
      * Accept and Content-Type are set to application/xml only (this is the only format supported by ALM)
      * Prerequisites: login passed
+     *
      * @param uri - URI to call
      * @return - CloseableHttpResponse for further usage
      */
@@ -151,8 +154,9 @@ public class AlmRestUtils {
 
     /**
      * Print all headers of request or response
-     * @param uri - URI of the request
-     * @param allHeaders - headers array to pring
+     *
+     * @param uri               - URI of the request
+     * @param allHeaders        - headers array to pring
      * @param isResponseHeaders - true if headers belong to response, false if headers belong to request
      */
     private void printAllHeaders(URI uri, Header[] allHeaders, boolean isResponseHeaders) {
@@ -179,16 +183,22 @@ public class AlmRestUtils {
         }
     }
 
-    public URIBuilder prepareGetEntityAuditsUrl(URI locationUri, String domain, String project, String parentType, int parentId, int id, int pageSize, int startIndex, String orderByTime) {
+    //example: http://localhost:8082/qcbin/rest/domains/Default/projects/bp1/audits?login-form-required=y&query={parent-type[defect];parent-id[%3E0];time[%3E%272015-07-23%2010:06:27%27]}&order-by={time[asc]}
+    public URIBuilder prepareGetEntityAuditsUrl(URI locationUri, String domain, String project, String parentType, int parentId, int id, String startTime, int pageSize, int startIndex, String orderByTime) {
         URIBuilder builder = new URIBuilder();
-        builder.setScheme(locationUri.getScheme()).setHost(locationUri.getHost()).setPort(locationUri.getPort()).setPath(locationUri.getPath() + "/rest/domains/" + domain + "/projects/" + project + "/audits")
-                .addParameter("query", "{parent-type[" + parentType + "];parent-id[>" + parentId + "];id[>" + id + "]}")
-                .addParameter("page-size", Integer.toString(pageSize))
-                .addParameter("start-index", Integer.toString(startIndex));
-        if(StringUtils.isNotEmpty(orderByTime)){
-            if(orderByTime.equals("desc")){
+        builder.setScheme(locationUri.getScheme()).setHost(locationUri.getHost()).setPort(locationUri.getPort()).setPath(locationUri.getPath() + "/rest/domains/" + domain + "/projects/" + project + "/audits");
+        if (id > 0) {
+            builder.addParameter("query", "{parent-type[" + parentType + "];parent-id[>" + parentId + "];id[>" + id + "]}");
+        } else {
+            builder.addParameter("query", "{parent-type[" + parentType + "];parent-id[>" + parentId + "];id[>" + id + "];time[>'" + startTime + "']}");
+        }
+        builder.addParameter("page-size", Integer.toString(pageSize));
+        builder.addParameter("start-index", Integer.toString(startIndex));
+
+        if (StringUtils.isNotEmpty(orderByTime)) {
+            if (orderByTime.equals("desc")) {
                 builder.addParameter("order-by", "{time[desc]}");
-            } else if(orderByTime.equals("asc")){
+            } else if (orderByTime.equals("asc")) {
                 builder.addParameter("order-by", "{time[asc]}");
             }
         }

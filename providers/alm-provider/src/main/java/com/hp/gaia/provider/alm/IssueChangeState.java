@@ -18,6 +18,8 @@ import org.apache.http.util.EntityUtils;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -57,12 +59,13 @@ public class IssueChangeState implements State {
         URI locationUri = stateContext.getIssueChangeDataConfiguration().getLocation();
         String domain = stateContext.getIssueChangeDataConfiguration().getDomain();
         String project = stateContext.getIssueChangeDataConfiguration().getProject();
+        int historyDataPeriod = stateContext.getIssueChangeDataConfiguration().getHistoryDays();
         Map<String, String> credentials = stateContext.getCredentialsProvider().getCredentials();
 
         AlmRestUtils almRestUtils = new AlmRestUtils(stateContext.getHttpClient());
         almRestUtils.login(locationUri, credentials);
         log.debug("Loged in successfully with user " + credentials.get("username"));
-        URIBuilder builder = almRestUtils.prepareGetEntityAuditsUrl(locationUri, domain, project, "defect", 0, auditId, StateMachine.PAGE_SIZE, ((StateMachine) stateContext).getNextStartIndex(), "asc");
+        URIBuilder builder = almRestUtils.prepareGetEntityAuditsUrl(locationUri, domain, project, "defect", 0, auditId, getQueryDate(historyDataPeriod), StateMachine.PAGE_SIZE, ((StateMachine) stateContext).getNextStartIndex(), "asc");
         return createData(stateContext, almRestUtils.runGetRequest(builder.build()));
     }
 
@@ -106,6 +109,14 @@ public class IssueChangeState implements State {
 
         return new DataImpl(customMetadata, stateContext.getDataType(), (CloseableHttpResponse) response, bookmark);
 
+    }
+
+    String getQueryDate(int days){
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE, days * -1);
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        return format.format(calendar.getTime());
     }
 
 }

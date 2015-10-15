@@ -11,11 +11,13 @@ public class AlmIssueChangeDataConfig {
     private final URI location;
     private final String domain;
     private final String project;
+    private final int historyDays;
 
-    public AlmIssueChangeDataConfig(URI location, String domain, String project) {
+    public AlmIssueChangeDataConfig(URI location, String domain, String project, int historyDays) {
         this.location = location;
         this.domain = domain;
         this.project = project;
+        this.historyDays = historyDays;
     }
 
     public URI getLocation() {
@@ -28,5 +30,9 @@ public class AlmIssueChangeDataConfig {
 
     public String getProject() {
         return project;
+    }
+
+    public int getHistoryDays() {
+        return historyDays;
     }
 }

@@ -53,6 +53,22 @@ public class AlmIssueChangeDataProvider implements DataProvider{
         if(StringUtils.isEmpty(project)){
             throw new InvalidConfigurationException("project is missing");
         }
-        return new AlmIssueChangeDataConfig(location , domain, project);
+        String historyDaysString = properties.get("init_history_days");
+        if(StringUtils.isEmpty(historyDaysString)){
+            logger.warn("init_history_days property is empty for " + location + ", project " + project + ", domain" + domain + ". Using default value: 60");
+            historyDaysString="60";
+        }
+
+        int historyDays = 60;
+        try {
+            historyDays = Integer.parseInt(historyDaysString);
+            if(historyDays < 1 || historyDays > 365) {
+                logger.error("init_history_days property value is invalid (" + historyDaysString + ") for " + location + ", project " + project + ", domain" + domain + ". Using default value: 60");
+            }
+        } catch (NumberFormatException nfe){
+            logger.error("init_history_days property value is invalid (" + historyDaysString + ") for " + location + ", project " + project + ", domain" + domain + ". Using default value: 60");
+        }
+
+        return new AlmIssueChangeDataConfig(location , domain, project, historyDays);
     }
 }
