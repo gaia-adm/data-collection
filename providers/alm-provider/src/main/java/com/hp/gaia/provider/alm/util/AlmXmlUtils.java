@@ -29,7 +29,7 @@ public class AlmXmlUtils {
         int highest = 0;
         try {
             XMLInputFactory factory = XMLInputFactory.newInstance();
-            XMLStreamReader reader = factory.createXMLStreamReader(new ByteArrayInputStream(xmlString.getBytes()));
+            XMLStreamReader reader = factory.createXMLStreamReader(new ByteArrayInputStream(xmlString.getBytes()), "UTF8");
             while (reader.hasNext()) {
                 int event = reader.next();
                 if (event == XMLStreamConstants.START_ELEMENT && reader.getLocalName().equals(tagName)) {
@@ -58,7 +58,7 @@ public class AlmXmlUtils {
         int counter = 0;
         XMLInputFactory factory = XMLInputFactory.newInstance();
         try {
-            XMLStreamReader reader = factory.createXMLStreamReader(new ByteArrayInputStream(xmlString.getBytes()));
+            XMLStreamReader reader = factory.createXMLStreamReader(new ByteArrayInputStream(xmlString.getBytes()), "UTF8");
             while (reader.hasNext()) {
                 int event = reader.next();
                 if (event == XMLStreamConstants.START_ELEMENT && reader.getLocalName().equals(tagName)) {
@@ -84,7 +84,7 @@ public class AlmXmlUtils {
         int result = 0;
         XMLInputFactory factory = XMLInputFactory.newInstance();
         try {
-            XMLStreamReader reader = factory.createXMLStreamReader(new ByteArrayInputStream(xmlString.getBytes()));
+            XMLStreamReader reader = factory.createXMLStreamReader(new ByteArrayInputStream(xmlString.getBytes()), "UTF8");
             while (reader.hasNext()) {
                 int event = reader.next();
                 if (event == XMLStreamConstants.START_ELEMENT && reader.getLocalName().equals(tagName)) {
