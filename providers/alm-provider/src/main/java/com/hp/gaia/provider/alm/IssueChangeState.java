@@ -83,7 +83,7 @@ public class IssueChangeState implements State {
             ContentType ct = ContentType.get(entity);
             StringEntity stringEntity = new StringEntity(EntityUtils.toString(response.getEntity()), ct);
             response.setEntity(stringEntity);
-            log.debug("CONTENT: " + EntityUtils.toString(stringEntity));
+            log.trace("CONTENT: " + EntityUtils.toString(stringEntity));
         } catch (IOException e) {
             throw new RuntimeException("Cannot make entity repeatable");
         }
