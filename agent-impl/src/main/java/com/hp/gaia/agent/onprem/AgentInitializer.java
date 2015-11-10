@@ -50,6 +50,7 @@ public class AgentInitializer {
         onPremCollectionStateService.init(getStateDir());
         onPremResultUploadService.init(onPremAgentConfigService.getWorkerPool());
         threadPoolTaskExecutor.setMaxPoolSize(onPremAgentConfigService.getWorkerPool());
+        threadPoolTaskExecutor.setCorePoolSize(onPremAgentConfigService.getWorkerPool());
     }
 
     private static File getStateDir() {

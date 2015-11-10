@@ -5,6 +5,16 @@ CircleCI build status: [![Circle CI](https://circleci.com/gh/gaia-adm/data-colle
 GAIA on-premise agent is a component that performs collection of data
 from on-premise systems and sends it to GAIA analytics on cloud.
 
+# Building the agent
+
+Gaia agent consists of agent infrastructure and providers.
+By default, agent build contains all supported providers.
+In order to pick up provider(s) selectively, relevant environment variable must be provided with value true.
+Example:
+all providers: mvn clean install
+alm and circleci providers: mvn clean install -Dalm=true -Dagm=true
+Relevant variable names can be found in agent-impl pom.xml profiles section.
+
 # Quick Start Linux
 
 1. Unpack the distribution archive

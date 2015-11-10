@@ -72,7 +72,7 @@
             <artifactId>slf4j-log4j12</artifactId>
         </dependency>
         <!-- providers -->
-        <dependency>
+<!--        <dependency>
             <groupId>com.hp.gaia.data-collection</groupId>
             <artifactId>agm-provider</artifactId>
         </dependency>
@@ -87,7 +87,7 @@
         <dependency>
             <groupId>com.hp.gaia.data-collection</groupId>
             <artifactId>circleci-provider</artifactId>
-        </dependency>
+        </dependency>-->
         <!-- test dependencies -->
         <dependency>
             <groupId>junit</groupId>
@@ -144,5 +144,94 @@
                 </dependency>
             </dependencies>
         </profile>
+        <profile>
+            <id>alm</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+                <property>
+                    <name>alm</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>com.hp.gaia.data-collection</groupId>
+                    <artifactId>alm-provider</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>agm</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+                <property>
+                    <name>agm</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>com.hp.gaia.data-collection</groupId>
+                    <artifactId>agm-provider</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>jenkins</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+                <property>
+                    <name>jenkins</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>com.hp.gaia.data-collection</groupId>
+                    <artifactId>jenkins-provider</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>circleci</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+                <property>
+                    <name>circleci</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>com.hp.gaia.data-collection</groupId>
+                    <artifactId>circleci-provider</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>default</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>com.hp.gaia.data-collection</groupId>
+                    <artifactId>agm-provider</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>com.hp.gaia.data-collection</groupId>
+                    <artifactId>alm-provider</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>com.hp.gaia.data-collection</groupId>
+                    <artifactId>jenkins-provider</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>com.hp.gaia.data-collection</groupId>
+                    <artifactId>circleci-provider</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+
     </profiles>
 </project>
