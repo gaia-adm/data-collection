@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:annotation-config/>
+
+    <bean class="com.hp.gaia.agent.oncloud.AgentInitializer"/>
+
+    <bean id="agent_agentConfigService" class="com.hp.gaia.agent.oncloud.service.OnCloudAgentConfigService" />
+
+<!--    <bean id="agent_credentialsService" class="com.hp.gaia.agent.onprem.service.OnPremCredentialsService"/>
+
+    <bean id="agent_providersConfigService" class="com.hp.gaia.agent.onprem.service.OnPremProvidersConfigService"/>
+
+    <bean id="agent_collectionStateService" class="com.hp.gaia.agent.onprem.service.OnPremCollectionStateService"/>
+
+    <bean id="agent_plannedCollectionProvider"
+          class="com.hp.gaia.agent.onprem.service.OnPremPlannedCollectionProvider"/>
+
+    <bean id="agent_resultUploadService" class="com.hp.gaia.agent.onprem.service.OnPremResultUploadService"/>-->
+
+</beans>

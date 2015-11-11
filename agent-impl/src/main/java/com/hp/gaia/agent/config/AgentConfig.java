@@ -58,6 +58,22 @@ public class AgentConfig {
         return connectTimeout;
     }
 
+    public void setGaiaLocation(String gaiaLocation) {
+        this.gaiaLocation = gaiaLocation;
+    }
+
+    public void setWorkerPool(Integer workerPool) {
+        this.workerPool = workerPool;
+    }
+
+    public void setSoTimeout(Integer soTimeout) {
+        this.soTimeout = soTimeout;
+    }
+
+    public void setConnectTimeout(Integer connectTimeout) {
+        this.connectTimeout = connectTimeout;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("AgentConfig{");
