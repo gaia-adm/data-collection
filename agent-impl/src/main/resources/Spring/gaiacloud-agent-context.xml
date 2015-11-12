@@ -11,15 +11,36 @@
 
     <bean id="agent_agentConfigService" class="com.hp.gaia.agent.oncloud.service.OnCloudAgentConfigService" />
 
-<!--    <bean id="agent_credentialsService" class="com.hp.gaia.agent.onprem.service.OnPremCredentialsService"/>
+    <bean id="agent_providersConfigService" class="com.hp.gaia.agent.oncloud.service.OnCloudProvidersConfigService" />
 
-    <bean id="agent_providersConfigService" class="com.hp.gaia.agent.onprem.service.OnPremProvidersConfigService"/>
+    <bean id="agent_plannedCollectionProvider" class="com.hp.gaia.agent.oncloud.service.OnCloudPlannedCollectionProvider"/>
 
-    <bean id="agent_collectionStateService" class="com.hp.gaia.agent.onprem.service.OnPremCollectionStateService"/>
+    <bean id="agent_collectionStateService" class="com.hp.gaia.agent.oncloud.service.OnCloudCollectionStateService"/>
 
-    <bean id="agent_plannedCollectionProvider"
-          class="com.hp.gaia.agent.onprem.service.OnPremPlannedCollectionProvider"/>
+<!--Temporary - for running AgentStartup in IDE -->
+    <context:component-scan base-package="com.hp.gaia.provider.alm"/>
+    <context:component-scan base-package="com.hp.gaia.provider.agm"/>
 
-    <bean id="agent_resultUploadService" class="com.hp.gaia.agent.onprem.service.OnPremResultUploadService"/>-->
+
+    <!-- Boris: -move to shared -->
+    <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="triggers">
+            <list>
+                <ref bean="agent_dataCollectionJobTrigger"/>
+            </list>
+        </property>
+    </bean>
+
+
+    <!--    <bean id="agent_credentialsService" class="com.hp.gaia.agent.onprem.service.OnPremCredentialsService"/>
+
+        <bean id="agent_providersConfigService" class="com.hp.gaia.agent.onprem.service.OnPremProvidersConfigService"/>
+
+        <bean id="agent_collectionStateService" class="com.hp.gaia.agent.onprem.service.OnPremCollectionStateService"/>
+
+        <bean id="agent_plannedCollectionProvider"
+              class="com.hp.gaia.agent.onprem.service.OnPremPlannedCollectionProvider"/>
+
+        <bean id="agent_resultUploadService" class="com.hp.gaia.agent.onprem.service.OnPremResultUploadService"/>-->
 
 </beans>

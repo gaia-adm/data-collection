@@ -16,6 +16,7 @@
 
     <modules>
         <module>on-premise-agent</module>
+        <module>on-cloud-agent</module>
     </modules>
 
 </project>

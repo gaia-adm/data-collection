@@ -2,23 +2,13 @@ package com.hp.gaia.agent.oncloud.service;
 
 import com.hp.gaia.agent.config.AgentConfig;
 import com.hp.gaia.agent.config.ProtectedValue;
-import com.hp.gaia.agent.config.ProtectedValue.Type;
-import com.hp.gaia.agent.config.Proxy;
 import com.hp.gaia.agent.oncloud.GlobalSettings;
-import com.hp.gaia.agent.onprem.config.ConfigUtils;
 import com.hp.gaia.agent.service.AgentConfigService;
-import com.hp.gaia.agent.service.ProtectedValueDecrypter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.io.File;
 
 public class OnCloudAgentConfigService implements AgentConfigService {
 
-    private static final int DEFAULT_WORKER_POOL = 5;
-    private static final int DEFAULT_SO_TIMEOUT = 60000;
-    private static final int DEFAULT_CONNECT_TIMEOUT = 30000;
 /*    private static final String DEFAULT_RABBITMQ_HOST = "rabbitmq-master.skydns.local";
     private static final String DEFAULT_RABBITMQ_USER = "admin";
     private static final String DEFAULT_RABBITMQ_PASSWORD = "";*/
@@ -30,49 +20,10 @@ public class OnCloudAgentConfigService implements AgentConfigService {
 
     public void init() {
 
-        if (StringUtils.isEmpty(GlobalSettings.getGaiaLocation())) {
-            System.out.println("Gaia location is not provided, exiting");
-            throw new IllegalStateException("Gaia location is not provided, cannot continue");
-//            System.exit(2);
-        } else {
-            agentConfig.setGaiaLocation(GlobalSettings.getGaiaLocation());
-        }
-
-        if (StringUtils.isEmpty(GlobalSettings.getWorkerPool())) {
-            System.out.println("Worker pool size is not provided, using default");
-            agentConfig.setWorkerPool(DEFAULT_WORKER_POOL);
-        } else {
-            try {
-                agentConfig.setWorkerPool(Integer.valueOf(GlobalSettings.getWorkerPool()));
-            } catch (NumberFormatException nfe) {
-                System.out.println("Provided workere pool value is invalid, using default");
-                agentConfig.setWorkerPool(DEFAULT_WORKER_POOL);
-            }
-        }
-
-        if (StringUtils.isEmpty(GlobalSettings.getConnectTimeout())) {
-            System.out.println("Connection timeout is not provided, using default");
-            agentConfig.setConnectTimeout(DEFAULT_CONNECT_TIMEOUT);
-        } else {
-            try {
-                agentConfig.setConnectTimeout(Integer.valueOf(GlobalSettings.getConnectTimeout()));
-            } catch (NumberFormatException nfe) {
-                System.out.println("Provided connection timeout value is invalid, using default");
-                agentConfig.setConnectTimeout(DEFAULT_CONNECT_TIMEOUT);
-            }
-        }
-
-        if (StringUtils.isEmpty(GlobalSettings.getSoTimeout())) {
-            System.out.println("Socket timeout is not provided, using default");
-            agentConfig.setSoTimeout(DEFAULT_SO_TIMEOUT);
-        } else {
-            try {
-                agentConfig.setSoTimeout(Integer.valueOf(GlobalSettings.getSoTimeout()));
-            } catch (NumberFormatException nfe) {
-                System.out.println("Provided socket timeout value is invalid, using default");
-                agentConfig.setSoTimeout(DEFAULT_SO_TIMEOUT);
-            }
-        }
+        agentConfig.setGaiaLocation(GlobalSettings.getGaiaLocation());
+        agentConfig.setWorkerPool(GlobalSettings.getWorkerPool());
+        agentConfig.setConnectTimeout(GlobalSettings.getConnectTimeout());
+        agentConfig.setSoTimeout(GlobalSettings.getSoTimeout());
 
         validate(agentConfig);
 
@@ -92,7 +43,7 @@ public class OnCloudAgentConfigService implements AgentConfigService {
 
     @Override
     public int getWorkerPool() {
-        return agentConfig.getWorkerPool() != null ? agentConfig.getWorkerPool() : DEFAULT_WORKER_POOL;
+        return agentConfig.getWorkerPool();
     }
 
     @Override
@@ -102,13 +53,12 @@ public class OnCloudAgentConfigService implements AgentConfigService {
 
     @Override
     public int getSoTimeout() {
-        return agentConfig.getSoTimeout() != null ? agentConfig.getSoTimeout() : DEFAULT_SO_TIMEOUT;
+        return agentConfig.getSoTimeout();
     }
 
     @Override
     public int getConnectTimeout() {
-        return agentConfig.getConnectTimeout() != null ? agentConfig.getConnectTimeout() :
-                DEFAULT_CONNECT_TIMEOUT;
+        return agentConfig.getConnectTimeout();
     }
 
     private static void validate(final AgentConfig agentConfig) {

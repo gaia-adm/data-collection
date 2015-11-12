@@ -1,6 +1,8 @@
 package com.hp.gaia.agent.oncloud;
 
 import com.hp.gaia.agent.oncloud.service.OnCloudAgentConfigService;
+import com.hp.gaia.agent.oncloud.service.OnCloudCollectionStateService;
+import com.hp.gaia.agent.oncloud.service.OnCloudProvidersConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
@@ -23,6 +25,14 @@ public class AgentInitializer {
     @Autowired
     private OnCloudAgentConfigService onCloudAgentConfigService;
 
+    @Autowired
+    private OnCloudProvidersConfigService onCloudProvidersConfigService;
+
+    @Autowired
+    private OnCloudCollectionStateService onCloudCollectionStateService;
+
+    @Autowired
+    private ThreadPoolTaskExecutor threadPoolTaskExecutor;
 /*    @Autowired
     private OnPremAgentConfigService onPremAgentConfigService;
 
@@ -38,14 +48,17 @@ public class AgentInitializer {
     @Autowired
     private OnPremResultUploadService onPremResultUploadService;
 
-    @Autowired
-    private ThreadPoolTaskExecutor threadPoolTaskExecutor;*/
+*/
 
     @PostConstruct
     public void init() {
         onCloudAgentConfigService.init();
+        onCloudProvidersConfigService.init();
+        onCloudCollectionStateService.init();
+        threadPoolTaskExecutor.setMaxPoolSize(onCloudAgentConfigService.getWorkerPool());
+        threadPoolTaskExecutor.setCorePoolSize(onCloudAgentConfigService.getWorkerPool());
 /*        onPremCredentialsService.init(com.hp.gaia.agent.onprem.GlobalSettings.getConfigFile(CREDENTIALS_CONFIG));
-        onPremProvidersConfigService.init(com.hp.gaia.agent.onprem.GlobalSettings.getConfigFile(PROVIDERS_CONFIG));
+        PremProvidersConfigService.init(com.hp.gaia.agent.onprem.GlobalSettings.getConfigFile(PROVIDERS_CONFIG));
         onPremCollectionStateService.init(getStateDir());
         onPremResultUploadService.init(onPremAgentConfigService.getWorkerPool());
         threadPoolTaskExecutor.setMaxPoolSize(onPremAgentConfigService.getWorkerPool());

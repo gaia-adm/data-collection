@@ -43,4 +43,8 @@ public class DataProviderRegistry {
         }
         return dataProvider;
     }
+
+    public List<DataProvider> getDataProviders(){
+        return dataProviders;
+    }
 }
