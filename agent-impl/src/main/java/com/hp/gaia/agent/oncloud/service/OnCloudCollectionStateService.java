@@ -40,6 +40,7 @@ public class OnCloudCollectionStateService implements CollectionStateService {
     }
 
     public void init() {
+        collectionStateMap = new HashMap<>();
         System.out.println("OnCloudCollectionStateService initialized");
     }
 
@@ -80,12 +81,15 @@ public class OnCloudCollectionStateService implements CollectionStateService {
 
     @Override
     public CollectionState getCollectionState(final String providerConfigId) {
-        Validate.notNull(providerConfigId);
+
+        return null;
+
+/*        Validate.notNull(providerConfigId);
 
         if (!providersConfigService.isProviderConfig(providerConfigId)) {
             throw new IllegalArgumentException(providerConfigId + " is not a valid provider configuration id");
         }
-        return collectionStateMap.get(providerConfigId);
+        return collectionStateMap.get(providerConfigId);*/
     }
 
     @Override
@@ -93,11 +97,15 @@ public class OnCloudCollectionStateService implements CollectionStateService {
         Validate.notNull(collectionState);
 
         String providerConfigId = collectionState.getProviderConfigId();
+
+//TODO - boris: no need?
+/*
         if (!providersConfigService.isProviderConfig(providerConfigId)) {
             throw new IllegalArgumentException(providerConfigId + " is not a valid provider configuration id");
         }
         // save the state into file
         saveToFile(collectionState);
+*/
 
         // save locally
         collectionStateMap.put(providerConfigId, (CollectionState) ObjectUtils.clone(collectionState));

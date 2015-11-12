@@ -1,5 +1,6 @@
 package com.hp.gaia.agent.oncloud.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hp.gaia.agent.config.ProviderConfig;
 import com.hp.gaia.agent.oncloud.GlobalSettings;
 import com.rabbitmq.client.AMQP;
@@ -55,7 +56,8 @@ public class MessageConsumer extends DefaultConsumer {
 
             Map<String, String> propsMap = new HashMap<>();
             propsMap.put("deliveryTag", Long.toString(envelope.getDeliveryTag()));
-            localTasksQueue.offer(new ProviderConfig("configId",envelope.getRoutingKey(), propsMap, "credentialsId", null, null));
+            //localTasksQueue.offer(new ProviderConfig("configId",envelope.getRoutingKey(), propsMap, "credentialsId", null, null));
+            localTasksQueue.offer(new ObjectMapper().readValue(new String(body), ProviderConfig.class));
             getChannel().basicAck(envelope.getDeliveryTag(), false);
             System.out.println("Task is stored in the local queue");
             messagesUnderProcessing--;
