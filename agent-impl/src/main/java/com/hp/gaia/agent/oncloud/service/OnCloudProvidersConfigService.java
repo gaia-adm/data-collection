@@ -2,20 +2,23 @@ package com.hp.gaia.agent.oncloud.service;
 
 import com.hp.gaia.agent.config.ProviderConfig;
 import com.hp.gaia.agent.oncloud.GlobalSettings;
+import com.hp.gaia.agent.oncloud.config.CollectionTaskBreaker;
+import com.hp.gaia.agent.oncloud.config.FullCollectionTask;
 import com.hp.gaia.agent.service.DataProviderRegistry;
 import com.hp.gaia.agent.service.ProvidersConfigService;
 import com.hp.gaia.provider.DataProvider;
-import com.rabbitmq.client.*;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.DefaultConsumer;
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 
+
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeoutException;
 
 public class OnCloudProvidersConfigService implements ProvidersConfigService {
@@ -34,6 +37,9 @@ public class OnCloudProvidersConfigService implements ProvidersConfigService {
     private static final int DEFAULT_RUN_PERIOD = 60; // every 60 minutes
 
     private Map<String, ProviderConfig> providerConfigMap;
+
+    @Autowired
+    CollectionTaskBreaker collectionTaskBreaker;
 
 /*
     @Autowired
@@ -137,9 +143,16 @@ public class OnCloudProvidersConfigService implements ProvidersConfigService {
         List<ProviderConfig> result = new ArrayList<>();
 
         consumer.handleConsumeOk(consumer.getConsumerTag());
-        ProviderConfig providerConfig = ((MessageConsumer) consumer).getNextLocalTask();
-        if(providerConfig != null){
-            result.add(providerConfig);
+        FullCollectionTask fct = ((MessageConsumer) consumer).getNextLocalTask();
+
+        if (fct != null && fct.getProviderConfig() != null) {
+            long tenantId = fct.getTenantId();
+            ProviderConfig pc = fct.getProviderConfig();
+            pc.setCredentialsId(tenantId + pc.getCredentialsId());
+            collectionTaskBreaker.setCredentials(tenantId, fct.getCredentials());
+            collectionTaskBreaker.setCollectionState(tenantId, fct.getCollectionState());
+
+            result.add(pc);
         }
 
         return result;
@@ -152,7 +165,6 @@ public class OnCloudProvidersConfigService implements ProvidersConfigService {
                 String message = new String(delivery.getBody());
                 String routingKey = delivery.getEnvelope().getRoutingKey();
                 System.out.println(" [x] Received '" + message + "' with routing key " + routingKey);
-                //TODO - boris: create ProviderConfig from message json
                 result.add(new ProviderConfig("configId", "providerId", new HashMap<String, String>(), "credentialsId", null, 0));
                 channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
             }

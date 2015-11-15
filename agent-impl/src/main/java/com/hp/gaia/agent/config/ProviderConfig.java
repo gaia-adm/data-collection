@@ -15,6 +15,10 @@ public class ProviderConfig {
     @JsonProperty("properties")
     private Map<String, String> properties;
 
+    public void setCredentialsId(String credentialsId) {
+        this.credentialsId = credentialsId;
+    }
+
     @JsonProperty("credentialsId")
     private String credentialsId;
 
