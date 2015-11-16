@@ -72,6 +72,7 @@ public class FullCollectionTask {
     }
 
     public CollectionState getCollectionState() {
+        collectionState.setProviderConfigId(providerConfig.getConfigId());
         return collectionState;
     }
 

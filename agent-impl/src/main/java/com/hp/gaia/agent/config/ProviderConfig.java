@@ -71,6 +71,10 @@ public class ProviderConfig {
         return runPeriod;
     }
 
+    public void setConfigId(String configId) {
+        this.configId = configId;
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) {

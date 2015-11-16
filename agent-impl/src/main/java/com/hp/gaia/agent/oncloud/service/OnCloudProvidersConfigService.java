@@ -78,16 +78,14 @@ public class OnCloudProvidersConfigService implements ProvidersConfigService {
 
             consumer = new MessageConsumer(channel);
             for (DataProvider dataProvider : dataProviderRegistry.getDataProviders()) {
-                channel.basicConsume("task/" + dataProvider.getProviderId(), true, consumer);
+                channel.basicConsume("task/" + dataProvider.getProviderId(), false, consumer);
                 System.out.println("Consumption started for  from task/" + dataProvider.getProviderId());
             }
 
             consumer.handleCancel(consumer.getConsumerTag());
             System.out.println("Done with RabbitMQ preparations and channel paused");
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (TimeoutException e) {
+        } catch (IOException | TimeoutException e) {
             e.printStackTrace();
         }
 
@@ -148,7 +146,8 @@ public class OnCloudProvidersConfigService implements ProvidersConfigService {
         if (fct != null && fct.getProviderConfig() != null) {
             long tenantId = fct.getTenantId();
             ProviderConfig pc = fct.getProviderConfig();
-            pc.setCredentialsId(tenantId + pc.getCredentialsId());
+            pc.setConfigId(CollectionTaskBreaker.concat(String.valueOf(tenantId),pc.getConfigId()));
+            pc.setCredentialsId(CollectionTaskBreaker.concat(String.valueOf(tenantId),pc.getCredentialsId()));
             collectionTaskBreaker.setCredentials(tenantId, fct.getCredentials());
             collectionTaskBreaker.setCollectionState(tenantId, fct.getCollectionState());
 
