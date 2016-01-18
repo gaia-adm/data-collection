@@ -20,6 +20,8 @@ import org.apache.http.util.EntityUtils;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Map;
 
 /**
@@ -56,7 +58,7 @@ public class AlmRestUtils {
         String createSessionBody = "<session-parameters><client-type>Gaia ReST Client</client-type><time-out>60</time-out></session-parameters>";
         String createSessionString = baseUri.toString() + "/rest/site-session";
         runPostRequest(URI.create(createSessionString), createSessionBody);
-
+        log.debug("Logged in successfully with user " + credentials.get("username"));
     }
 
     /**
@@ -185,6 +187,7 @@ public class AlmRestUtils {
 
     //example: http://localhost:8082/qcbin/rest/domains/Default/projects/bp1/audits?login-form-required=y&query={parent-type[defect];parent-id[%3E0];time[%3E%272015-07-23%2010:06:27%27]}&order-by={time[asc]}
     public URIBuilder prepareGetEntityAuditsUrl(URI locationUri, String domain, String project, String parentType, int parentId, int id, String startTime, int pageSize, int startIndex, String orderByTime) {
+
         URIBuilder builder = new URIBuilder();
         builder.setScheme(locationUri.getScheme()).setHost(locationUri.getHost()).setPort(locationUri.getPort()).setPath(locationUri.getPath() + "/rest/domains/" + domain + "/projects/" + project + "/audits");
         if (id > 0) {
@@ -205,5 +208,11 @@ public class AlmRestUtils {
         return builder;
     }
 
+    public static String getQueryDate(int days){
 
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE, days * -1);
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        return format.format(calendar.getTime());
+    }
 }

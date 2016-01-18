@@ -15,5 +15,4 @@ public interface State {
      * @param stateContext
      */
     Bookmarkable execute(StateContext stateContext);
-
 }

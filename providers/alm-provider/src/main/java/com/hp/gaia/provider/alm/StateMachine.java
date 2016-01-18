@@ -5,14 +5,16 @@ import com.hp.gaia.provider.Bookmarkable;
 import com.hp.gaia.provider.CredentialsProvider;
 import com.hp.gaia.provider.ProxyProvider;
 import com.hp.gaia.provider.alm.util.AlmXmlUtils;
-import com.hp.gaia.provider.alm.util.JsonSerializer;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.config.RequestConfig;
-import org.apache.http.impl.client.*;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
@@ -28,25 +30,27 @@ import java.util.LinkedList;
  * Created by belozovs on 8/24/2015.
  *
  */
-public class StateMachine implements Closeable, StateContext {
+public abstract class StateMachine implements Closeable, StateContext {
 
     private static final Logger log = LogManager.getLogger(StateMachine.class);
 
-    private final AlmIssueChangeDataConfig dataConfig;
+    private final AlmDataConfig dataConfig;
     private final ProxyProvider proxyProvider;
     private final CredentialsProvider credentialsProvider;
-
     private String dataType;
-
     private CloseableHttpClient httpclient;
-
     private final LinkedList<State> stack = new LinkedList<>();
 
     public final static int PAGE_SIZE = 100;
     private int nextStartIndex = 1;
     private int totalReceivedResults = 0;
+    private String almXmlParentTag;
 
-    public StateMachine(final AlmIssueChangeDataConfig dataConfig, final CredentialsProvider credentialsProvider, final ProxyProvider proxyProvider, String providerId) {
+    protected abstract void doInit(String bookmark, boolean inclusive);
+    protected abstract String getAlmXmlParentTag();
+
+    public StateMachine(final AlmDataConfig dataConfig, final CredentialsProvider credentialsProvider, final ProxyProvider proxyProvider, String providerId) {
+
         this.dataConfig = dataConfig;
         this.proxyProvider = proxyProvider;
         this.credentialsProvider = credentialsProvider;
@@ -54,6 +58,7 @@ public class StateMachine implements Closeable, StateContext {
     }
 
     public int getNextStartIndex() {
+
         return nextStartIndex;
     }
 
@@ -62,23 +67,14 @@ public class StateMachine implements Closeable, StateContext {
      * NOTE: inclusive is not in use currently, any data fetch will be done for auditID bigger than bookmarked (i.e., inclusive = false)
      */
     public void init(final String bookmark, final boolean inclusive) {
+
         this.httpclient = createHttpClient();
-
-        IssueChangeState state = new IssueChangeState();
-        if(bookmark != null){
-            IssueChangeBookmark icb = JsonSerializer.deserialize(bookmark, IssueChangeBookmark.class);
-            if(icb != null){
-                state.setAuditId(icb.getLastAuditId());
-            }
-        }
-        log.debug("Starting with auditId " + state.getAuditId());
-
-        add(state);
+        doInit(bookmark, inclusive);
     }
-
 
     //invoke the collection
     public Bookmarkable next() throws AccessDeniedException {
+
         Bookmarkable data = null;
         State state;
         while(!stack.isEmpty()) {
@@ -88,7 +84,7 @@ public class StateMachine implements Closeable, StateContext {
                 try {
                     String content = EntityUtils.toString(((DataImpl) data).getResponse().getEntity());
                     AlmXmlUtils almXmlUtils = new AlmXmlUtils();
-                    int totalResults = almXmlUtils.getIntegerAttributeValue(content, "Audits", "TotalResults");
+                    int totalResults = almXmlUtils.getIntegerAttributeValue(content, getAlmXmlParentTag(), "TotalResults");
                     int resultsReceived = almXmlUtils.countTags(content, "Audit");
                     log.debug("Results received in the last request: " + resultsReceived);
                     totalReceivedResults += resultsReceived;
@@ -124,7 +120,7 @@ public class StateMachine implements Closeable, StateContext {
     }
 
     @Override
-    public AlmIssueChangeDataConfig getIssueChangeDataConfiguration() {
+    public AlmDataConfig getDataConfiguration() {
         return dataConfig;
     }
 
@@ -135,6 +131,7 @@ public class StateMachine implements Closeable, StateContext {
 
     @Override
     public void add(State state) {
+
         stack.addFirst(state);
     }
 
