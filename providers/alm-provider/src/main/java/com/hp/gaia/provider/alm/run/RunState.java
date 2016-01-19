@@ -59,24 +59,41 @@ public class RunState implements State {
         URI locationUri = stateContext.getDataConfiguration().getLocation();
         String domain = stateContext.getDataConfiguration().getDomain();
         String project = stateContext.getDataConfiguration().getProject();
-        int historyDataPeriod = stateContext.getDataConfiguration().getHistoryDays();
         Map<String, String> credentials = stateContext.getCredentialsProvider().getCredentials();
 
         AlmRestUtils almRestUtils = new AlmRestUtils(stateContext.getHttpClient());
         // TODO: use cookie if already logged-in
         almRestUtils.login(locationUri, credentials);
-        URIBuilder builder = prepareGetEntityUrl(locationUri, domain, project, getQueryDate(historyDataPeriod), StateMachine.PAGE_SIZE, ((StateMachine) stateContext).getNextStartIndex());
+        initLastModified(almRestUtils, locationUri, stateContext.getDataConfiguration().getHistoryDays());
+        URIBuilder builder = prepareGetEntityUrl(locationUri, domain, project, StateMachine.PAGE_SIZE, ((StateMachine) stateContext).getNextStartIndex());
 
         return createData(stateContext, almRestUtils.runGetRequest(builder.build()));
     }
 
+    private void initLastModified(AlmRestUtils almRestUtils, URI locationUri, int historyDays) {
+
+        try {
+            String time = almRestUtils.getAlmServerTime(locationUri);
+            String lastModified = getLastModified();
+            if (lastModified == null || lastModified.isEmpty()) {
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(format.parse(time));
+                calendar.add(Calendar.DATE, historyDays * (-1));
+                setLastModified(format.format(calendar.getTime()));
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to initialize ALM run last modified", e);
+        }
+    }
+
     //example: http://localhost:8082/qcbin/rest/domains/MY_DOMAIN/projects/MY_PROJECT/runs?query={id[>0];last-modified[%3E%272015-07-23%2010:06:27%27]}}
-    private URIBuilder prepareGetEntityUrl(URI locationUri, String domain, String project, String startTime, int pageSize, int startIndex) {
+    private URIBuilder prepareGetEntityUrl(URI locationUri, String domain, String project, int pageSize, int startIndex) {
 
         URIBuilder builder = new URIBuilder();
         builder.setScheme(locationUri.getScheme()).setHost(locationUri.getHost()).setPort(locationUri.getPort()).setPath(locationUri.getPath() + "/rest/domains/" + domain + "/projects/" + project + "/runs");
-        //builder.addParameter("query", "{last-modified[>'" + startTime + "']}");
-        builder.addParameter("page-size", Integer.toString(pageSize));
+        builder.addParameter("query", "{last-modified[>'" + getLastModified() + "']}");
+        builder.addParameter("page-size", "1"); //Integer.toString(pageSize));
         builder.addParameter("start-index", Integer.toString(startIndex));
 
         return builder;
@@ -115,19 +132,10 @@ public class RunState implements State {
         }
 
         RunBookmark runBookmark = new RunBookmark();
-        runBookmark.setLastModified("");
+        runBookmark.setLastModified(getLastModified());
         log.debug("New bookmark is set to " + runBookmark.getLastModified());
         String bookmark = JsonSerializer.serialize(runBookmark);
 
         return new DataImpl(customMetadata, stateContext.getDataType(), (CloseableHttpResponse) response, bookmark);
-
-    }
-
-    private String getQueryDate(int days) {
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DATE, days * -1);
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-        return format.format(calendar.getTime());
     }
 }

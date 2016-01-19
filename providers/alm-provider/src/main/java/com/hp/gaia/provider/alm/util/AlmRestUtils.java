@@ -14,11 +14,14 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -36,9 +39,30 @@ public class AlmRestUtils {
     private RequestConfig requestConfig;
 
     public AlmRestUtils(CloseableHttpClient httpClient) {
+
         int TIMEOUT_MSEC = 10000;
         this.httpClient = httpClient;
         requestConfig = RequestConfig.custom().setConnectionRequestTimeout(TIMEOUT_MSEC).setConnectTimeout(TIMEOUT_MSEC).setSocketTimeout(TIMEOUT_MSEC).build();
+    }
+
+    public String getAlmServerTime(URI locationUri) throws URISyntaxException {
+
+        String ret = null;
+        try {
+            URIBuilder builder = new URIBuilder();
+            builder.setScheme(locationUri.getScheme()).setHost(locationUri.getHost()).setPort(locationUri.getPort()).setPath(locationUri.getPath() + "/rest/server/time");
+            HttpResponse response = runGetRequest(builder.build());
+            HttpEntity entity = response.getEntity();
+            ContentType ct = ContentType.get(entity);
+            StringEntity stringEntity = new StringEntity(EntityUtils.toString(response.getEntity()), ct);
+            response.setEntity(stringEntity);
+            String content = EntityUtils.toString(response.getEntity());
+            ret = AlmXmlUtils.getTagValue(content, "DateTime");
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to get ALM server time", e);
+        }
+
+        return ret;
     }
 
     /**
@@ -150,7 +174,6 @@ public class AlmRestUtils {
             if (!skipClose) {
                 IOUtils.closeQuietly(httpResponse);
             }
-
         }
     }
 
@@ -213,6 +236,7 @@ public class AlmRestUtils {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE, days * -1);
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
         return format.format(calendar.getTime());
     }
 }

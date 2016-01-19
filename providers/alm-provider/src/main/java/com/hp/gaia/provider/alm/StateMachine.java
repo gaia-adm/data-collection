@@ -28,7 +28,6 @@ import java.util.LinkedList;
 
 /**
  * Created by belozovs on 8/24/2015.
- *
  */
 public abstract class StateMachine implements Closeable, StateContext {
 
@@ -44,10 +43,12 @@ public abstract class StateMachine implements Closeable, StateContext {
     public final static int PAGE_SIZE = 100;
     private int nextStartIndex = 1;
     private int totalReceivedResults = 0;
-    private String almXmlParentTag;
 
     protected abstract void doInit(String bookmark, boolean inclusive);
+
     protected abstract String getAlmXmlParentTag();
+
+    protected abstract String getAlmXmlChildTag();
 
     public StateMachine(final AlmDataConfig dataConfig, final CredentialsProvider credentialsProvider, final ProxyProvider proxyProvider, String providerId) {
 
@@ -55,11 +56,6 @@ public abstract class StateMachine implements Closeable, StateContext {
         this.proxyProvider = proxyProvider;
         this.credentialsProvider = credentialsProvider;
         this.dataType = providerId;
-    }
-
-    public int getNextStartIndex() {
-
-        return nextStartIndex;
     }
 
     /**
@@ -77,7 +73,7 @@ public abstract class StateMachine implements Closeable, StateContext {
 
         Bookmarkable data = null;
         State state;
-        while(!stack.isEmpty()) {
+        while (!stack.isEmpty()) {
             state = stack.removeFirst();
             data = state.execute(this);
             if (data != null) {
@@ -85,23 +81,29 @@ public abstract class StateMachine implements Closeable, StateContext {
                     String content = EntityUtils.toString(((DataImpl) data).getResponse().getEntity());
                     AlmXmlUtils almXmlUtils = new AlmXmlUtils();
                     int totalResults = almXmlUtils.getIntegerAttributeValue(content, getAlmXmlParentTag(), "TotalResults");
-                    int resultsReceived = almXmlUtils.countTags(content, "Audit");
+                    int resultsReceived = almXmlUtils.countTags(content, getAlmXmlChildTag());
                     log.debug("Results received in the last request: " + resultsReceived);
                     totalReceivedResults += resultsReceived;
                     log.debug("Total results received in current iteration: " + totalReceivedResults);
-                    if(totalReceivedResults< totalResults){
-                        log.debug("Some data is still waiting, another request should executed; total results: " + totalResults + ", received till now: " + totalReceivedResults + ", left: " + (totalResults-totalReceivedResults));
+                    if (totalReceivedResults < totalResults) {
+                        log.debug("Some data is still waiting, another request should executed; total results: " + totalResults + ", received till now: " + totalReceivedResults + ", left: " + (totalResults - totalReceivedResults));
                         add(state);
                     }
                 } catch (IOException e) {
                     log.error(e);
                     throw new RuntimeException("Failed to read the response; " + e.getMessage());
                 }
-                nextStartIndex = nextStartIndex +PAGE_SIZE;
+                nextStartIndex = nextStartIndex + PAGE_SIZE;
                 break;
             }
         }
+
         return data;
+    }
+
+    public int getNextStartIndex() {
+
+        return nextStartIndex;
     }
 
     @Override

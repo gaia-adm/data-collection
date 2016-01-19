@@ -43,4 +43,10 @@ public class RunStateMachine extends StateMachine {
 
         return "Entities";
     }
+
+    @Override
+    protected String getAlmXmlChildTag() {
+
+        return "Entity";
+    }
 }

@@ -40,6 +40,12 @@ public class IssueChangeStateMachine extends StateMachine {
     }
 
     @Override
+    protected String getAlmXmlChildTag() {
+
+        return "Audit";
+    }
+
+    @Override
     protected String getAlmXmlParentTag() {
 
         return "Audits";
