@@ -9,6 +9,7 @@ import com.hp.gaia.provider.alm.StateMachine;
 import com.hp.gaia.provider.alm.util.AlmRestUtils;
 import com.hp.gaia.provider.alm.util.AlmXmlUtils;
 import com.hp.gaia.provider.alm.util.JsonSerializer;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
@@ -73,11 +74,10 @@ public class RunState implements State {
     private void initLastModified(AlmRestUtils almRestUtils, URI locationUri, int historyDays) {
 
         try {
-            String time = almRestUtils.getAlmServerTime(locationUri);
-            String lastModified = getLastModified();
-            if (lastModified == null || lastModified.isEmpty()) {
+            if (StringUtils.isEmpty(getLastModified())) {
                 SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
                 Calendar calendar = Calendar.getInstance();
+                String time = almRestUtils.getAlmServerTime(locationUri);
                 calendar.setTime(format.parse(time));
                 calendar.add(Calendar.DATE, historyDays * (-1));
                 setLastModified(format.format(calendar.getTime()));
@@ -93,7 +93,7 @@ public class RunState implements State {
         URIBuilder builder = new URIBuilder();
         builder.setScheme(locationUri.getScheme()).setHost(locationUri.getHost()).setPort(locationUri.getPort()).setPath(locationUri.getPath() + "/rest/domains/" + domain + "/projects/" + project + "/runs");
         builder.addParameter("query", "{last-modified[>'" + getLastModified() + "']}");
-        builder.addParameter("page-size", "1"); //Integer.toString(pageSize));
+        builder.addParameter("page-size", Integer.toString(pageSize));
         builder.addParameter("start-index", Integer.toString(startIndex));
 
         return builder;

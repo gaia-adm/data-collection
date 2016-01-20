@@ -17,6 +17,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,6 +30,7 @@ import static org.easymock.EasyMock.*;
 import static org.junit.Assert.assertNotNull;
 
 @DirtiesContext
+@ContextConfiguration({"classpath*:/Spring/test-gaia-provider-run-context.xml"})
 public class AlmRunDataProviderTest extends AgentIntegrationTest {
 
     @Autowired
@@ -52,7 +54,7 @@ public class AlmRunDataProviderTest extends AgentIntegrationTest {
         dataCollectionTask.setResultUploadService(resultUploadService);
     }
 
-    // @Test
+    @Test
     public void testSuccess() throws URISyntaxException, IOException {
 
         onPremCredentialsService.init(getConfigFile("credentials_configs/alm_credentials.json"));
@@ -64,6 +66,7 @@ public class AlmRunDataProviderTest extends AgentIntegrationTest {
         Capture<ProviderConfig> providerConfigCapture = new Capture<>();
         Capture<Data> dataCapture = new Capture<>();
         resultUploadService.sendData(capture(providerConfigCapture), capture(dataCapture));
+        expectLastCall().anyTimes();
         // replay mocks
         replay(resultUploadService);
         ProviderConfig providerConfig = onPremProvidersConfigService.getProviderConfig("1");
