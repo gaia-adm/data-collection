@@ -7,8 +7,8 @@ import com.hp.gaia.provider.alm.State;
 import com.hp.gaia.provider.alm.StateContext;
 import com.hp.gaia.provider.alm.StateMachine;
 import com.hp.gaia.provider.alm.util.AlmRestUtils;
-import com.hp.gaia.provider.alm.util.AlmXmlUtils;
 import com.hp.gaia.provider.alm.util.JsonSerializer;
+import com.hp.gaia.provider.alm.util.RestConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
@@ -18,6 +18,7 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URI;
@@ -67,7 +68,10 @@ public class RunState implements State {
         initLastModified(almRestUtils, locationUri, stateContext.getDataConfiguration().getHistoryDays());
         URIBuilder builder = prepareGetEntityUrl(locationUri, domain, project, StateMachine.PAGE_SIZE, ((StateMachine) stateContext).getNextStartIndex());
 
-        return createData(stateContext, almRestUtils.runGetRequest(builder.build()));
+        Map<String, String> headers = new HashMap<>(2);
+        headers.put(RestConstants.ACCEPT, RestConstants.APPLICATION_JSON);
+
+        return createData(stateContext, almRestUtils.runGetRequest(builder.build(), headers));
     }
 
     private void initLastModified(AlmRestUtils almRestUtils, URI locationUri, int historyDays) {
@@ -118,7 +122,6 @@ public class RunState implements State {
             throw new RuntimeException("Cannot make entity repeatable");
         }
 
-        AlmXmlUtils almXmlUtils = new AlmXmlUtils();
         String content;
         try {
             content = EntityUtils.toString(response.getEntity());
@@ -126,7 +129,9 @@ public class RunState implements State {
             throw new RuntimeException("Cannot read entity content");
         }
 
-        if (almXmlUtils.getIntegerAttributeValue(content, "Entities", "TotalResults") == 0) {
+        JSONObject json = new JSONObject(content);
+        Object runCount = json.get("TotalResults");
+        if (runCount == null || ((String)runCount).isEmpty() || Integer.valueOf(((String)runCount)) == 0) {
             log.debug("No run events happened, there is nothing to sent");
             return null;
         }

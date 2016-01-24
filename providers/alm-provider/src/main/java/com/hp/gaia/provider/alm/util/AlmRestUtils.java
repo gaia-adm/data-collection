@@ -25,6 +25,7 @@ import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -87,20 +88,17 @@ public class AlmRestUtils {
 
     /**
      * Run any GET request against given URI
-     * Accept and Content-Type are set to application/xml only (this is the only format supported by ALM)
      * Prerequisites: login passed
      *
      * @param uri - URI to call
+     * @param headers - request headers
      * @return - CloseableHttpResponse for further usage
      */
-    public HttpResponse runGetRequest(URI uri) {
+    public HttpResponse runGetRequest(URI uri, Map<String, String> headers) {
 
         HttpGet httpGet = new HttpGet();
-
-        httpGet.setHeader("Accept", "application/xml");
-        httpGet.setHeader("Content-Type", "application/xml");
+        headers.forEach(httpGet::setHeader);
         httpGet.setConfig(requestConfig);
-
         httpGet.setURI(uri);
 
         boolean skipClose = false;
@@ -128,6 +126,20 @@ public class AlmRestUtils {
                 IOUtils.closeQuietly(httpResponse);
             }
         }
+    }
+
+    /**
+     * Run any GET request against given URI
+     * Accept and Content-Type are set to application/xml
+     * Prerequisites: login passed
+     */
+    public HttpResponse runGetRequest(URI uri) {
+
+        Map<String, String> headers = new HashMap<>(2);
+        headers.put(RestConstants.ACCEPT, RestConstants.APPLICATION_XML);
+        headers.put(RestConstants.CONTENT_TYPE, RestConstants.APPLICATION_XML);
+
+        return runGetRequest(uri, headers);
     }
 
     /**
