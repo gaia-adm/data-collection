@@ -4,9 +4,11 @@ import com.hp.gaia.provider.CredentialsProvider;
 import com.hp.gaia.provider.ProxyProvider;
 import com.hp.gaia.provider.alm.AlmDataConfig;
 import com.hp.gaia.provider.alm.StateMachine;
+import com.hp.gaia.provider.alm.util.JSONUtils;
 import com.hp.gaia.provider.alm.util.JsonSerializer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONObject;
 
 /**
  * Created by belozovs on 8/24/2015.
@@ -36,6 +38,18 @@ public class RunStateMachine extends StateMachine {
         }
         log.debug("Starting with runs last modified: " + state.getLastModified());
         add(state);
+    }
+
+    @Override
+    protected int getResultsReceived(String content) {
+
+        return JSONUtils.getArraySize(content, "entities");
+    }
+
+    @Override
+    protected int getTotalResults(String content) {
+
+        return JSONUtils.getIntValue(content, "TotalResults");
     }
 
     @Override

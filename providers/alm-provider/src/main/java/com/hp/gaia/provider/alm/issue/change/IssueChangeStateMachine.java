@@ -4,6 +4,7 @@ import com.hp.gaia.provider.CredentialsProvider;
 import com.hp.gaia.provider.ProxyProvider;
 import com.hp.gaia.provider.alm.AlmDataConfig;
 import com.hp.gaia.provider.alm.StateMachine;
+import com.hp.gaia.provider.alm.util.AlmXmlUtils;
 import com.hp.gaia.provider.alm.util.JsonSerializer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -37,6 +38,20 @@ public class IssueChangeStateMachine extends StateMachine {
         log.debug("Starting with auditId " + state.getAuditId());
 
         add(state);
+    }
+
+    protected int getTotalResults(String content) {
+
+        AlmXmlUtils almXmlUtils = new AlmXmlUtils();
+
+        return almXmlUtils.getIntegerAttributeValue(content, getAlmXmlParentTag(), "TotalResults");
+    }
+
+    protected int getResultsReceived(String content) {
+
+        AlmXmlUtils almXmlUtils = new AlmXmlUtils();
+
+        return almXmlUtils.countTags(content, getAlmXmlChildTag());
     }
 
     @Override

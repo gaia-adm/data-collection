@@ -6,9 +6,7 @@ import com.hp.gaia.provider.alm.DataImpl;
 import com.hp.gaia.provider.alm.State;
 import com.hp.gaia.provider.alm.StateContext;
 import com.hp.gaia.provider.alm.StateMachine;
-import com.hp.gaia.provider.alm.util.AlmRestUtils;
-import com.hp.gaia.provider.alm.util.AlmXmlUtils;
-import com.hp.gaia.provider.alm.util.JsonSerializer;
+import com.hp.gaia.provider.alm.util.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -19,6 +17,7 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URI;
@@ -128,9 +127,8 @@ public class RunState implements State {
             throw new RuntimeException("Cannot read entity content");
         }
 
-        JSONObject json = new JSONObject(content);
-        Object runCount = json.get("TotalResults");
-        if (runCount == null || ((String)runCount).isEmpty() || Integer.valueOf(((String)runCount)) == 0) {
+        int runCount = JSONUtils.getIntValue(content, "TotalResults");
+        if (runCount == 0) {
             log.debug("No run events happened, there is nothing to sent");
             return null;
         }

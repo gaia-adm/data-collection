@@ -79,9 +79,8 @@ public abstract class StateMachine implements Closeable, StateContext {
             if (data != null) {
                 try {
                     String content = EntityUtils.toString(((DataImpl) data).getResponse().getEntity());
-                    AlmXmlUtils almXmlUtils = new AlmXmlUtils();
-                    int totalResults = almXmlUtils.getIntegerAttributeValue(content, getAlmXmlParentTag(), "TotalResults");
-                    int resultsReceived = almXmlUtils.countTags(content, getAlmXmlChildTag());
+                    int totalResults = getTotalResults(content);
+                    int resultsReceived = getResultsReceived(content);
                     log.debug("Results received in the last request: " + resultsReceived);
                     totalReceivedResults += resultsReceived;
                     log.debug("Total results received in current iteration: " + totalReceivedResults);
@@ -100,6 +99,10 @@ public abstract class StateMachine implements Closeable, StateContext {
 
         return data;
     }
+
+    abstract protected int getResultsReceived(String content);
+
+    abstract protected int getTotalResults(String content);
 
     public int getNextStartIndex() {
 

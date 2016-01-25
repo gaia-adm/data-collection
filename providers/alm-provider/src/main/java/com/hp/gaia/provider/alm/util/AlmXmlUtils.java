@@ -1,5 +1,6 @@
 package com.hp.gaia.provider.alm.util;
 
+import org.apache.commons.io.Charsets;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
@@ -37,7 +38,7 @@ public class AlmXmlUtils {
         int highest = 0;
         try {
             XMLInputFactory factory = XMLInputFactory.newInstance();
-            XMLStreamReader reader = factory.createXMLStreamReader(new ByteArrayInputStream(xmlString.getBytes()), "UTF8");
+            XMLStreamReader reader = factory.createXMLStreamReader(new ByteArrayInputStream(xmlString.getBytes()), Charsets.UTF_8.name());
             while (reader.hasNext()) {
                 int event = reader.next();
                 if (event == XMLStreamConstants.START_ELEMENT && reader.getLocalName().equals(tagName)) {
@@ -64,10 +65,11 @@ public class AlmXmlUtils {
      * @return - number of occurrences
      */
     public int countTags(String xmlString, String tagName) {
+        
         int counter = 0;
         XMLInputFactory factory = XMLInputFactory.newInstance();
         try {
-            XMLStreamReader reader = factory.createXMLStreamReader(new ByteArrayInputStream(xmlString.getBytes()), "UTF8");
+            XMLStreamReader reader = factory.createXMLStreamReader(new ByteArrayInputStream(xmlString.getBytes()), Charsets.UTF_8.name());
             while (reader.hasNext()) {
                 int event = reader.next();
                 if (event == XMLStreamConstants.START_ELEMENT && reader.getLocalName().equals(tagName)) {
@@ -91,10 +93,11 @@ public class AlmXmlUtils {
      * @return - integer value of the attribute
      */
     public int getIntegerAttributeValue(String xmlString, String tagName, String attrName) {
+
         int result = 0;
         XMLInputFactory factory = XMLInputFactory.newInstance();
         try {
-            XMLStreamReader reader = factory.createXMLStreamReader(new ByteArrayInputStream(xmlString.getBytes()), "UTF8");
+            XMLStreamReader reader = factory.createXMLStreamReader(new ByteArrayInputStream(xmlString.getBytes()), Charsets.UTF_8.name());
             while (reader.hasNext()) {
                 int event = reader.next();
                 if (event == XMLStreamConstants.START_ELEMENT && reader.getLocalName().equals(tagName)) {
