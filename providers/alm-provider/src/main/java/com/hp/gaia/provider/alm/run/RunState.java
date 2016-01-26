@@ -64,23 +64,23 @@ public class RunState implements State {
         AlmRestUtils almRestUtils = new AlmRestUtils(stateContext.getHttpClient());
         // TODO: use cookie if already logged-in
         almRestUtils.login(locationUri, credentials);
-        initLastModified(almRestUtils, locationUri, stateContext.getDataConfiguration().getHistoryDays());
+        String almServerTime = almRestUtils.getAlmServerTime(locationUri);
+        initLastModified(almRestUtils, locationUri, almServerTime, stateContext.getDataConfiguration().getHistoryDays());
         URIBuilder builder = prepareGetEntityUrl(locationUri, domain, project, StateMachine.PAGE_SIZE, ((StateMachine) stateContext).getNextStartIndex());
 
         Map<String, String> headers = new HashMap<>(2);
         headers.put(RestConstants.ACCEPT, RestConstants.APPLICATION_JSON);
 
-        return createData(stateContext, almRestUtils.runGetRequest(builder.build(), headers));
+        return createData(stateContext, almRestUtils.runGetRequest(builder.build(), headers), almServerTime);
     }
 
-    private void initLastModified(AlmRestUtils almRestUtils, URI locationUri, int historyDays) {
+    private void initLastModified(AlmRestUtils almRestUtils, URI locationUri, String almServerTime, int historyDays) {
 
         try {
             if (StringUtils.isEmpty(getLastModified())) {
-                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
                 Calendar calendar = Calendar.getInstance();
-                String time = almRestUtils.getAlmServerTime(locationUri);
-                calendar.setTime(format.parse(time));
+                SimpleDateFormat format = new SimpleDateFormat(RestConstants.ALM_DATE_TIME_FORMAT);
+                calendar.setTime(format.parse(almServerTime));
                 calendar.add(Calendar.DATE, historyDays * (-1));
                 setLastModified(format.format(calendar.getTime()));
             }
@@ -102,7 +102,7 @@ public class RunState implements State {
     }
 
     //create data object; returns null, if no changes happened since previous collection in order to prevent sending empty XMLs to ResultUploader
-    private Data createData(StateContext stateContext, HttpResponse response) {
+    private Data createData(StateContext stateContext, HttpResponse response, String almServerTime) {
 
         Map<String, String> customMetadata = new HashMap<>();
         customMetadata.put("ALM_LOCATION", stateContext.getDataConfiguration().getLocation().toString());
@@ -134,7 +134,7 @@ public class RunState implements State {
         }
 
         RunBookmark runBookmark = new RunBookmark();
-        runBookmark.setLastModified(getLastModified());
+        runBookmark.setLastModified(almServerTime);
         log.debug("New bookmark is set to " + runBookmark.getLastModified());
         String bookmark = JsonSerializer.serialize(runBookmark);
 

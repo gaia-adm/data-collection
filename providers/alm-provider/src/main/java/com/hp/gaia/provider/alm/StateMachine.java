@@ -50,6 +50,10 @@ public abstract class StateMachine implements Closeable, StateContext {
 
     protected abstract String getAlmXmlChildTag();
 
+    protected abstract int getResultsReceived(String content);
+
+    protected abstract int getTotalResults(String content);
+
     public StateMachine(final AlmDataConfig dataConfig, final CredentialsProvider credentialsProvider, final ProxyProvider proxyProvider, String providerId) {
 
         this.dataConfig = dataConfig;
@@ -99,10 +103,6 @@ public abstract class StateMachine implements Closeable, StateContext {
 
         return data;
     }
-
-    abstract protected int getResultsReceived(String content);
-
-    abstract protected int getTotalResults(String content);
 
     public int getNextStartIndex() {
 

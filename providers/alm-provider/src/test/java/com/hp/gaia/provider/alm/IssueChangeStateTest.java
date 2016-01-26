@@ -1,6 +1,7 @@
 package com.hp.gaia.provider.alm;
 
 import com.hp.gaia.provider.alm.util.AlmRestUtils;
+import com.hp.gaia.provider.alm.util.RestConstants;
 import junit.framework.Assert;
 import org.junit.Test;
 
@@ -21,7 +22,7 @@ public class IssueChangeStateTest {
     public void getStartDateTest() throws Exception {
 
         String dateString = AlmRestUtils.getQueryDate(30);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat(RestConstants.ALM_DATE_TIME_FORMAT);
         Date olderDate = sdf.parse(dateString);
         Calendar calendar = GregorianCalendar.getInstance();
         calendar.setTime(olderDate);

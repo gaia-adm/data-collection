@@ -25,7 +25,6 @@ public class RunStateMachine extends StateMachine {
 
     /**
      * Initializes 1st state based on supplied bookmark.
-     * NOTE: inclusive is not in use currently, any data fetch will be done for auditID bigger than bookmarked (i.e., inclusive = false)
      */
     public void doInit(final String bookmark, final boolean inclusive) {
 

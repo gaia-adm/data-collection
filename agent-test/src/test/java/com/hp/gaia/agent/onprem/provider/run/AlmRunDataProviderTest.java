@@ -39,8 +39,6 @@ public class AlmRunDataProviderTest extends AgentIntegrationTest {
     private OnPremCollectionStateService onPremCollectionStateService;
     @Autowired
     private OnPremProvidersConfigService onPremProvidersConfigService;
-    @Autowired
-    private DataProviderRegistry dataProviderRegistry;
     private ResultUploadService resultUploadService;
     @Autowired
     private ObjectFactory<DataCollectionTask> dataCollectionTaskFactory;
@@ -61,7 +59,6 @@ public class AlmRunDataProviderTest extends AgentIntegrationTest {
         onPremProvidersConfigService.init(getConfigFile("provider_configs/alm_provider.json"));
         Path tempDir = Files.createTempDirectory("DataCollectionTaskTest");
         onPremCollectionStateService.init(tempDir.toFile());
-        AlmRunDataProvider testProvider1 = (AlmRunDataProvider) dataProviderRegistry.getDataProvider("alm/run");
         // expectations
         Capture<ProviderConfig> providerConfigCapture = new Capture<>();
         Capture<Data> dataCapture = new Capture<>();

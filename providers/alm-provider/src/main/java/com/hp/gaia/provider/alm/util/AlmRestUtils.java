@@ -247,7 +247,7 @@ public class AlmRestUtils {
 
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE, days * -1);
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        SimpleDateFormat format = new SimpleDateFormat(RestConstants.ALM_DATE_TIME_FORMAT);
 
         return format.format(calendar.getTime());
     }
