@@ -14,12 +14,18 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -34,9 +40,30 @@ public class AlmRestUtils {
     private RequestConfig requestConfig;
 
     public AlmRestUtils(CloseableHttpClient httpClient) {
+
         int TIMEOUT_MSEC = 10000;
         this.httpClient = httpClient;
         requestConfig = RequestConfig.custom().setConnectionRequestTimeout(TIMEOUT_MSEC).setConnectTimeout(TIMEOUT_MSEC).setSocketTimeout(TIMEOUT_MSEC).build();
+    }
+
+    public String getAlmServerTime(URI locationUri) throws URISyntaxException {
+
+        String ret = null;
+        try {
+            URIBuilder builder = new URIBuilder();
+            builder.setScheme(locationUri.getScheme()).setHost(locationUri.getHost()).setPort(locationUri.getPort()).setPath(locationUri.getPath() + "/rest/server/time");
+            HttpResponse response = runGetRequest(builder.build());
+            HttpEntity entity = response.getEntity();
+            ContentType ct = ContentType.get(entity);
+            StringEntity stringEntity = new StringEntity(EntityUtils.toString(response.getEntity()), ct);
+            response.setEntity(stringEntity);
+            String content = EntityUtils.toString(response.getEntity());
+            ret = AlmXmlUtils.getTagValue(content, "DateTime");
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to get ALM server time", e);
+        }
+
+        return ret;
     }
 
     /**
@@ -56,25 +83,22 @@ public class AlmRestUtils {
         String createSessionBody = "<session-parameters><client-type>Gaia ReST Client</client-type><time-out>60</time-out></session-parameters>";
         String createSessionString = baseUri.toString() + "/rest/site-session";
         runPostRequest(URI.create(createSessionString), createSessionBody);
-
+        log.debug("Logged in successfully with user " + credentials.get("username"));
     }
 
     /**
      * Run any GET request against given URI
-     * Accept and Content-Type are set to application/xml only (this is the only format supported by ALM)
      * Prerequisites: login passed
      *
      * @param uri - URI to call
+     * @param headers - request headers
      * @return - CloseableHttpResponse for further usage
      */
-    public HttpResponse runGetRequest(URI uri) {
+    public HttpResponse runGetRequest(URI uri, Map<String, String> headers) {
 
         HttpGet httpGet = new HttpGet();
-
-        httpGet.setHeader("Accept", "application/xml");
-        httpGet.setHeader("Content-Type", "application/xml");
+        headers.forEach(httpGet::setHeader);
         httpGet.setConfig(requestConfig);
-
         httpGet.setURI(uri);
 
         boolean skipClose = false;
@@ -102,6 +126,20 @@ public class AlmRestUtils {
                 IOUtils.closeQuietly(httpResponse);
             }
         }
+    }
+
+    /**
+     * Run any GET request against given URI
+     * Accept and Content-Type are set to application/xml
+     * Prerequisites: login passed
+     */
+    public HttpResponse runGetRequest(URI uri) {
+
+        Map<String, String> headers = new HashMap<>(2);
+        headers.put(RestConstants.ACCEPT, RestConstants.APPLICATION_XML);
+        headers.put(RestConstants.CONTENT_TYPE, RestConstants.APPLICATION_XML);
+
+        return runGetRequest(uri, headers);
     }
 
     /**
@@ -148,7 +186,6 @@ public class AlmRestUtils {
             if (!skipClose) {
                 IOUtils.closeQuietly(httpResponse);
             }
-
         }
     }
 
@@ -185,6 +222,7 @@ public class AlmRestUtils {
 
     //example: http://localhost:8082/qcbin/rest/domains/Default/projects/bp1/audits?login-form-required=y&query={parent-type[defect];parent-id[%3E0];time[%3E%272015-07-23%2010:06:27%27]}&order-by={time[asc]}
     public URIBuilder prepareGetEntityAuditsUrl(URI locationUri, String domain, String project, String parentType, int parentId, int id, String startTime, int pageSize, int startIndex, String orderByTime) {
+
         URIBuilder builder = new URIBuilder();
         builder.setScheme(locationUri.getScheme()).setHost(locationUri.getHost()).setPort(locationUri.getPort()).setPath(locationUri.getPath() + "/rest/domains/" + domain + "/projects/" + project + "/audits");
         if (id > 0) {
@@ -205,5 +243,12 @@ public class AlmRestUtils {
         return builder;
     }
 
+    public static String getQueryDate(int days){
 
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE, days * -1);
+        SimpleDateFormat format = new SimpleDateFormat(RestConstants.ALM_DATE_TIME_FORMAT);
+
+        return format.format(calendar.getTime());
+    }
 }

@@ -1,7 +1,8 @@
-package com.hp.gaia.provider.alm;
+package com.hp.gaia.provider.alm.issue.change;
 
 import com.hp.gaia.provider.Bookmarkable;
 import com.hp.gaia.provider.Data;
+import com.hp.gaia.provider.alm.*;
 import com.hp.gaia.provider.alm.util.AlmRestUtils;
 import com.hp.gaia.provider.alm.util.AlmXmlUtils;
 import com.hp.gaia.provider.alm.util.JsonSerializer;
@@ -18,8 +19,6 @@ import org.apache.http.util.EntityUtils;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -56,16 +55,15 @@ public class IssueChangeState implements State {
     //Login to ALM and bring issue changes appear in audit tables starting from auditID stored in previous run bookmark
     private Data getIssueChanges(StateContext stateContext) throws URISyntaxException {
 
-        URI locationUri = stateContext.getIssueChangeDataConfiguration().getLocation();
-        String domain = stateContext.getIssueChangeDataConfiguration().getDomain();
-        String project = stateContext.getIssueChangeDataConfiguration().getProject();
-        int historyDataPeriod = stateContext.getIssueChangeDataConfiguration().getHistoryDays();
+        URI locationUri = stateContext.getDataConfiguration().getLocation();
+        String domain = stateContext.getDataConfiguration().getDomain();
+        String project = stateContext.getDataConfiguration().getProject();
+        int historyDataPeriod = stateContext.getDataConfiguration().getHistoryDays();
         Map<String, String> credentials = stateContext.getCredentialsProvider().getCredentials();
 
         AlmRestUtils almRestUtils = new AlmRestUtils(stateContext.getHttpClient());
         almRestUtils.login(locationUri, credentials);
-        log.debug("Loged in successfully with user " + credentials.get("username"));
-        URIBuilder builder = almRestUtils.prepareGetEntityAuditsUrl(locationUri, domain, project, "defect", 0, auditId, getQueryDate(historyDataPeriod), StateMachine.PAGE_SIZE, ((StateMachine) stateContext).getNextStartIndex(), "asc");
+        URIBuilder builder = almRestUtils.prepareGetEntityAuditsUrl(locationUri, domain, project, "defect", 0, auditId, AlmRestUtils.getQueryDate(historyDataPeriod), StateMachine.PAGE_SIZE, ((StateMachine) stateContext).getNextStartIndex(), "asc");
         return createData(stateContext, almRestUtils.runGetRequest(builder.build()));
     }
 
@@ -73,9 +71,9 @@ public class IssueChangeState implements State {
     private Data createData(StateContext stateContext, HttpResponse response) {
 
         Map<String, String> customMetadata = new HashMap<>();
-        customMetadata.put("ALM_LOCATION", stateContext.getIssueChangeDataConfiguration().getLocation().toString());
-        customMetadata.put("DOMAIN", stateContext.getIssueChangeDataConfiguration().getDomain());
-        customMetadata.put("PROJECT", stateContext.getIssueChangeDataConfiguration().getProject());
+        customMetadata.put("ALM_LOCATION", stateContext.getDataConfiguration().getLocation().toString());
+        customMetadata.put("DOMAIN", stateContext.getDataConfiguration().getDomain());
+        customMetadata.put("PROJECT", stateContext.getDataConfiguration().getProject());
 
         try {
             //make the entity repeatable - we need to fetch maximal auditId from the content and let ResultUploadServiceBase class to get the content as well
@@ -110,13 +108,4 @@ public class IssueChangeState implements State {
         return new DataImpl(customMetadata, stateContext.getDataType(), (CloseableHttpResponse) response, bookmark);
 
     }
-
-    String getQueryDate(int days){
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DATE, days * -1);
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-        return format.format(calendar.getTime());
-    }
-
 }
