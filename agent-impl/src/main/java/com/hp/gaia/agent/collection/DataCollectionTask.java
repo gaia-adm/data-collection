@@ -103,6 +103,7 @@ public class DataCollectionTask implements Runnable {
      * Performs execution of {@link DataProvider} and keeps updating bookmark in collection state.
      */
     private void fetchData() {
+
         DataProvider dataProvider = dataProviderRegistry.getDataProvider(providerConfig.getProviderId());
         CredentialsProvider credentialsProvider = new CredentialsProviderImpl(credentialsService,
                 providerConfig.getCredentialsId());

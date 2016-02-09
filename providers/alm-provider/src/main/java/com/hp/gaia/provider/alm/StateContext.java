@@ -9,7 +9,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
  */
 public interface StateContext {
 
-    AlmIssueChangeDataConfig getIssueChangeDataConfiguration();
+    AlmDataConfig getDataConfiguration();
 
     CredentialsProvider getCredentialsProvider();
 

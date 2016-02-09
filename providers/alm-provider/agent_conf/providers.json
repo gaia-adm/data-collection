@@ -19,6 +19,26 @@
       "proxy": {
         "httpProxy": "http://proxy.bbn.hp.com:8080"
       }
+    },
+    {
+      // Unique provider configuration id. It may be a number or string.
+      "configId": "2",
+      // Id of provider this configuration is for. List of allowed providerIds depends on bundled providers. See DataProvider implementations.
+      "providerId": "alm/run",
+      // Provider specific configuration properties, defined by DataProvider implementation.
+      "properties": {
+        "location": "http://alm.host.com:8082/qcbin",
+        "project": "Proj1",
+        "domain": "DEFAULT",
+        //inital fetch only - historical data will be fetched for last X days (allowed values are between 1 and 365)
+        "init_history_days": 60
+      },
+      "credentialsId": "yourCredentialsId",
+      //collection will run once in X minutes
+      "runPeriod": 60,
+      "proxy": {
+        "httpProxy": "http://proxy.bbn.hp.com:8080"
+      }
     }
   ]
 }

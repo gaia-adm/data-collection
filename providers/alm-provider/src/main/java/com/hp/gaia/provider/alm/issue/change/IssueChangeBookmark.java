@@ -1,4 +1,4 @@
-package com.hp.gaia.provider.alm;
+package com.hp.gaia.provider.alm.issue.change;
 
 /**
  * Created by belozovs on 8/25/2015.
