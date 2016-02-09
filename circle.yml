@@ -16,4 +16,4 @@ general:
     only:
       - master
   artifacts:
-    - target/gaia-on-premise-agent.zip
+    - "./target/gaia-on-premise-agent.zip"
