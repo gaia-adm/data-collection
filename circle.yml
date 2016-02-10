@@ -10,7 +10,7 @@ dependencies:
   override:
     - docker build -t gaiaadm/data-collection-build-img:$CIRCLE_BUILD_NUM -f Dockerfile.build .
     - docker create --name data-collection-build-cont gaiaadm/data-collection-build-img:$CIRCLE_BUILD_NUM
-    - docker cp data-collection-build-cont:/src/distributions/on-premise-agent/target/gaia-on-premise-agent.zip ./target
+    - docker cp data-collection-build-cont:/src/distributions/on-premise-agent/target/gaia-on-premise-agent.zip ./target/
     - docker cp data-collection-build-cont:/src/agent-impl/target/surefire-reports/ $CIRCLE_TEST_REPORTS
     - docker cp data-collection-build-cont:/src/agent-test/target/surefire-reports/ $CIRCLE_TEST_REPORTS
 test:
