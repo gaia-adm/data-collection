@@ -20,5 +20,3 @@ general:
   branches:
     only:
       - master
-  artifacts:
-    - "./README.md"
