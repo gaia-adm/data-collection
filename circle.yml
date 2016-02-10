@@ -21,4 +21,5 @@ general:
     only:
       - master
   artifacts:
-    - "gaia-on-premise-agent.zip"
+    - gaia-on-premise-agent.zip
+    - README.md
